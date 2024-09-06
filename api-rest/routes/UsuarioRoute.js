@@ -3,10 +3,11 @@ const router = express.Router();
 const UsuarioController = require("../controllers/UsuarioController.js");
 const {autenticarToken, verificarRol, dicciorioRoles} = require("../middleware.js")
 
-router.post("/usuario",autenticarToken, verificarRol(dicciorioRoles["Operador administrativo"]),
+router.post("/usuario",
  UsuarioController.crearUsuario);
 router.put("/usuario/:idusuarios", UsuarioController.actualizarUsuario);
 router.post("/login",UsuarioController.login);
+router.get("/verusuario/", autenticarToken, UsuarioController.verUsuario);
 //router.put("/estados/:idestados",EstadoController.actualizarEstado);
 
 module.exports = router;

@@ -6,7 +6,7 @@ const {generarToken} = require("../middleware.js");
 
 
 exports.crearUsuario= async (req,res) => {
-    const { rol_idrol,
+    const {
         correo_electronico, 
         nombre_completo, 
         contrasenia, 
@@ -33,7 +33,7 @@ exports.crearUsuario= async (req,res) => {
                 contraseniaEncriptada = await bcrypt.hash(contrasenia, saltoRondas);
         
                 await sequelize.query(
-                    `EXEC InsertarUsuarios :rol_idrol,
+                    `EXEC InsertarUsuarios
                      :correo_electronico,
                      :nombre_completo,
                      :contrasenia,
@@ -41,7 +41,6 @@ exports.crearUsuario= async (req,res) => {
                      :fecha_nacimiento` ,
                     {
                         replacements: { 
-                            rol_idrol,  
                             correo_electronico, 
                             nombre_completo, 
                             contrasenia: contraseniaEncriptada, 
@@ -50,11 +49,11 @@ exports.crearUsuario= async (req,res) => {
                         type: sequelize.QueryTypes.INSERT
                     }
                 );
-                res.status(200).json({message: "Usuario agregado correctamente"});
+                res.status(201).json({message: "Usuario agregado correctamente"});
             } 
             catch (error) {
                 res.status(400).json({message: "Error al crear el usuario"});
-                //console.log(error);
+                console.log(error);
             }
         }
 }
@@ -140,11 +139,11 @@ exports.login = async (req, res) => {
                 res.status(200).json({"token": token});
             }
             else {
-                res.status(404).json({message: "Contraseña incorrecta"});
+                res.status(400).json({message: "Contraseña incorrecta"});
             }
         }
         else {
-            res.status(404).json({message: "Usuario no encontrado"});
+            res.status(400).json({message: "Usuario no encontrado"});
         }
     }
     catch (error) {
@@ -152,3 +151,29 @@ exports.login = async (req, res) => {
         res.status(400).json({message: "Error al iniciar sesion"});
     }
 }
+
+exports.verUsuario = async (req, res) => {
+
+    const idusuarios = req.datos.datos.idusuario;
+
+    try {
+
+        const data = await sequelize.query(
+            `select idusuarios, rol_idrol, nombre_completo, correo_electronico, telefono
+            from usuarios
+            where idusuarios = :idusuarios` ,
+            {
+                replacements: {
+                    idusuarios
+                },
+                type: sequelize.QueryTypes.SELECT
+            }
+        );
+        res.status(200).json({data});
+    }
+    catch (error) {
+        //console.error("Error al ver los datos del usuario", error)
+        res.status(500).json({meesage: "Error al ver los datos del usuario"});
+    }
+    
+};

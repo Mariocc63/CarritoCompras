@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const {ConexionBD} = require("./config/database.js")
+const cors = require("cors");
 const PORT = 5000;
 
 const estadoRoutes = require("./routes/EstadoRoute.js")
@@ -9,6 +10,11 @@ const categoriaproductosRoutes = require("./routes/CategoriaProductosRoute.js")
 const productosRoutes = require("./routes/ProductosRoute.js")
 const ordenRoutes = require("./routes/OrdenRoute.js")
 
+app.use(cors({
+    origin: "http://localhost:5173",
+    methods: "GET,POST,PUT,DELETE",
+    allowedHeaders: "Content-Type,Authorization"
+}));
 
 
 app.use(express.json());
