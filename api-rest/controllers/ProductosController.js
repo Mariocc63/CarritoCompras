@@ -187,7 +187,7 @@ exports.verProductosActivos = async (req, res) => {
         }
         
     catch (error) {
-        res.status(400).json({message: "Error al cargar los productos"});
+        res.status(408).json({message: "Error al cargar los productos"});
     }
 }
 

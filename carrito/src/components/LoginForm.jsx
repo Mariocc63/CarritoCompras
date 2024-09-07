@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup'; 
 import * as yup from 'yup'; // Importar Yup para validaciones
@@ -19,7 +19,7 @@ const loginSchema = yup.object().shape({
 });
 
 const LoginForm = () => {
-  const { loginUser} = useContext(AuthContext);  // Verifica que estamos accediendo correctamente a loginUser
+  const {auth, loginUser} = useContext(AuthContext);  // Verifica que estamos accediendo correctamente a loginUser
   const [loginError, setLoginError] = useState("");
   const navigate = useNavigate();
 
@@ -28,11 +28,22 @@ const LoginForm = () => {
     resolver: yupResolver(loginSchema), // Resolver de Yup para validaciones
   });
 
+  useEffect(() => {
+    if (auth.user) {
+      // Redirigir basándose en el rol después de iniciar sesión
+      if (auth.user.data[0]?.rol_idrol === 2) {
+        navigate('/products');
+      } else if (auth.user.data[0]?.rol_idrol === 1) {
+        navigate('/home');
+      }
+    }
+  }, [auth.user, navigate]);
+
   const onSubmit = async (data) => {
     try {
       setLoginError("");
     await loginUser(data.email, data.password);
-    navigate("/home")
+    //navigate("/products")
     }
     catch (error) {
       setLoginError(error.message);

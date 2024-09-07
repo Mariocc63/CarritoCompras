@@ -20,7 +20,7 @@ router.post("/productos", subida.single("foto") , autenticarToken, verificarRol(
 ProductosController.crearProductos);
 router.put("/productos/:idproductos", subida.single("foto"), autenticarToken, verificarRol(dicciorioRoles["Operador administrativo"]),
  ProductosController.actualizarProductos)
-router.get("/verproductos/", autenticarToken, verificarRol(dicciorioRoles["Operador administrativo"]), 
+router.get("/verproductos/", autenticarToken, verificarRol(dicciorioRoles["Cliente"]), 
 ProductosController.verProductosActivos)
 router.get("/verproductoscategoria/:categoriaproductos_idcategoriaproductos", 
     autenticarToken, verificarRol(dicciorioRoles["Operador administrativo"]),

@@ -10,6 +10,10 @@ const authAxios = axios.create({
 });
 
 export const getProducts = async (token) => {
-    const response = await authAxios.get(`/verproductos`);
+    const response = await authAxios.get(`/verproductos` , {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        }
+      });
     return response.data;
   };

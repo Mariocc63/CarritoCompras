@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const {ConexionBD} = require("./config/database.js")
 const cors = require("cors");
+const path = require("path");
 const PORT = 5000;
 
 const estadoRoutes = require("./routes/EstadoRoute.js")
@@ -18,6 +19,7 @@ app.use(cors({
 
 
 app.use(express.json());
+app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use("/api", estadoRoutes)
 app.use("/api", usuarioRoutes)
 app.use("/api", categoriaproductosRoutes)

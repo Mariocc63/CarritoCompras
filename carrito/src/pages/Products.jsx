@@ -2,20 +2,32 @@ import React, { useContext, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import ProductList from '../components/ProductList';
+import { Button, Typography } from '@mui/material';
 
 const Products = () => {
-  const { auth } = useContext(AuthContext);
+  const { auth, logoutUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (auth.user?.idrol !== 2) {
-      navigate('/login');  // Redirige si no es cliente
-    }
-  }, [auth, navigate]);
+  const CerrarSesion = () => {
+    logoutUser();
+    navigate("/login")
+  }
+  // useEffect(() => {
+  //   if (auth.user?.idrol !== 2) {
+  //     navigate('/login');  // Redirige si no es cliente
+  //   }
+  // }, [auth, navigate]);
 
-  return auth.user && auth.user.idrol === 2 ? (
+  return ( <>
     <ProductList token={auth.token} />
-  ) : null;
+    <Button variant="contained" 
+            color="secondary" 
+            onClick={CerrarSesion}
+    >
+            Cerrar sesión
+    </Button>
+  </>
+  )
 };
 
 export default Products;
