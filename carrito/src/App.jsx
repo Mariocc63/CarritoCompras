@@ -8,12 +8,14 @@ import Products from './pages/Products';
 import theme from './styles/theme';
 import { AuthProvider } from './context/AuthContext';
 import { AuthContext } from './context/AuthContext';
-import ProtectedRoute from './components/ProtectedRoute';
+import PageContent from './components/PageContent';
+import ConfirmOrder from "./pages/ConfirmOrder";
 
 const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      <PageContent>
       <AuthProvider>
         <Router>
           <Routes>
@@ -22,9 +24,11 @@ const App = () => {
             <Route path="/register" element={<Register />} />
             <Route path="/home" element={<Home />} />
             <Route path="/products" element={<Products />} />
+            <Route path="/order" element={<ConfirmOrder />} />
           </Routes>
         </Router>
       </AuthProvider>
+      </PageContent>
     </ThemeProvider>
   );
 };

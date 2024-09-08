@@ -1,0 +1,33 @@
+/* styles.css */
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  .App {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  
+  .PageContent {
+    flex-grow: 1;
+  }
+
+  .cart-container {
+    display: flex;
+    overflow-x: auto; /* Permite el desplazamiento horizontal si los productos son más largos que el contenedor */
+    padding: 10px;
+    gap: 10px; /* Espacio entre los productos */
+  }
+  
+  .cart-item {
+    flex: 0 0 auto; /* Los ítems no se encogen ni se expanden */
+    width: 200px; /* Ajusta el tamaño según sea necesario */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    background-color: hsl(225, 80%, 43%);
+  }

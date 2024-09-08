@@ -1,62 +1,57 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { getProducts } from '../api/products';
-import { Box, Typography, Card, CardContent, CardMedia, Grid, Button } from '@mui/material';
+import { Box, Typography, Card, CardContent, CardMedia, Grid, Button, IconButton, AppBar, Toolbar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-//import { useCart } from '../context/CartContext';
+import RemoveIcon from '@mui/icons-material/Remove';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
+import '../styles/style.css';
+import { CartContext } from '../context/CartContext'; // Importar el CartContext
 
 const ProductList = ({ token }) => {
-  const { auth } = useContext(AuthContext);
+  const { auth, logoutUser } = useContext(AuthContext);
+  const { cart, subtotal, addToCart, decreaseQuantity, removeFromCart, clearCart } = useContext(CartContext); // Usar el contexto del carrito
   const [products, setProducts] = useState([]);
-  const [cart, setCart] = useState([]);
-  const [subtotal, setSubtotal] = useState(0);
-  //const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-
   useEffect(() => {
-    if(auth.token) {
+    if (auth.token) {
       const fetchProducts = async () => {
-      
         try {
-          //setLoading(true);
           const data = await getProducts(token);
           setProducts(data);
-          //console.log(data.productos);
         } catch (err) {
           setError('No se pudo cargar la lista de productos.');
         }
       };
       fetchProducts();
-    }
-    else {
+    } else {
       navigate('/login');
     }
-
-  }, [token]);
+  }, [token, auth.token, navigate]);
 
   if (products === null) {
     return <Typography variant="h5">Cargando productos...</Typography>;
   }
 
-  // Si no hay productos después de la carga
   if (products.length === 0) {
     return <Typography variant="h5">No hay productos disponibles.</Typography>;
   }
 
-  const addToCart = (producto) => {
-    setCart([...cart, producto]);
-    setSubtotal(subtotal + producto.precio);
+  const handleConfirmPurchase = () => {
+    // Implementar la lógica para confirmar la compra
+    navigate("/order");
   };
 
-  // Confirmar compra y limpiar carrito
-  const confirmPurchase = () => {
-    alert('Compra confirmada');
-    setCart([]);
-    setSubtotal(0);
-  };
+  const isCartEmpty = cart.length === 0;
 
+  const CerrarSesion = () => {
+    logoutUser();
+    navigate("/login");
+    clearCart();
+  }
 
   return (
     <Box>
@@ -85,25 +80,57 @@ const ProductList = ({ token }) => {
         ))}
       </Grid>
 
-      <div>
-        <h2>Carrito</h2>
-        {cart.length > 0 ? (
-          <div>
-            {cart.map((item, index) => (
-              <div key={index}>
-                <p>{item.producto} - Q{item.precio}</p>
-              </div>
-            ))}
-            <h3>Subtotal: Q{subtotal}</h3>
-            <button onClick={confirmPurchase}>Confirmar compra</button>
-          </div>
-        ) : (
-          <p>El carrito está vacío</p>
-        )}
-      </div>
-    </Box>
+      <AppBar>
+        <Toolbar>
+          <Typography variant="h6">Carrito</Typography>
+          {cart.length > 0 ? (
+            <div className='cart-container'>
+              {cart.map((item, index) => (
+                <div key={index} className='cart-item'>
+                  <p>{item.producto.producto} - Q{item.producto.precio} x {item.cantidad} unidades</p>
+                  <IconButton 
+                    color="primary" 
+                    onClick={() => addToCart(item.producto)} 
+                  >
+                    <AddIcon />
+                  </IconButton>
+                  <IconButton 
+                    color="primary" 
+                    onClick={() => decreaseQuantity(item.producto.codigo)} 
+                    disabled={item.cantidad === 1}
+                  >
+                    <RemoveIcon />
+                  </IconButton>
 
-    
+                  <IconButton 
+                    color="secondary" 
+                    onClick={() => removeFromCart(item.producto.codigo)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </div>
+              ))}
+              <Typography variant="h6">Subtotal: Q{subtotal}</Typography>
+              
+            </div>
+          ) : (
+            <p>El carrito está vacío</p>
+          )}
+            <Button variant="contained" color="primary" onClick={handleConfirmPurchase} size='small' disabled={isCartEmpty}>
+              Confirmar Compra
+            </Button>
+            <Button variant="contained" color="secondary" onClick={clearCart} size='small'>
+              Cancelar Compra
+            </Button>
+        </Toolbar>
+      </AppBar>
+      <Button variant="contained" 
+            color="secondary" 
+            onClick={CerrarSesion}
+      >
+            Cerrar sesión
+    </Button>
+    </Box>
   );
 };
 
