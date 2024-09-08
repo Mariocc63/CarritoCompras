@@ -9,6 +9,8 @@ router.get("/verordenes", autenticarToken, verificarRol(dicciorioRoles["Operador
  OrdenController.verOrdenes)
 router.get("/verordenes/detalles/:orden_idorden", autenticarToken, 
     verificarRol(dicciorioRoles["Operador administrativo"]), OrdenController.verOrdenesDetalles)
+router.get("/historial/detalles/:usuarios_idusuarios", autenticarToken, OrdenController.HistorialOrdenesUsuario)
+
 
 
 module.exports = router;

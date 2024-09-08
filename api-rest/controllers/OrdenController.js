@@ -210,3 +210,55 @@ exports.verOrdenesDetalles = async (req, res) => {
     
 };
 
+
+
+exports.HistorialOrdenesUsuario = async (req, res) => {
+
+    const {usuarios_idusuarios} = req.params
+
+    try {
+
+        const ordenes = await sequelize.query(
+            `select * from orden where usuarios_idusuarios = :usuarios_idusuarios` ,
+            {
+                replacements: {
+                    usuarios_idusuarios
+                },
+                type: sequelize.QueryTypes.SELECT
+            }
+        );
+
+        let historial = {ordenes:[]};
+
+        for(encabezado of ordenes) {
+            //console.log(encabezado);
+            
+            const idorden = encabezado.idorden;
+            let detalle = await sequelize.query(`select p.nombre as 'producto', o.cantidad as 'cantidad',
+                 o.precio as 'precio', o.subtotal as 'subtotal'
+                from productos p
+                join ordendetalles o on p.idproductos = o.productos_idproductos
+                where o.orden_idorden = :idorden`, {
+                    replacements: {
+                        idorden
+                    },
+                    type: sequelize.QueryTypes.SELECT
+                }
+
+            );
+            let orden = {
+                ...encabezado,
+                detalles: detalle
+            }
+
+            historial.ordenes.push(orden);
+        }
+
+        return res.status(200).json({historial});
+    }
+    catch (error) {
+        console.error("Error al el historial", error)
+        res.status(500).json({meesage: "Error al ver el historial"});
+    }
+    
+};
