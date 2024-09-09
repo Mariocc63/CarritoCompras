@@ -10,6 +10,9 @@ import { AuthProvider } from './context/AuthContext';
 import { AuthContext } from './context/AuthContext';
 import PageContent from './components/PageContent';
 import ConfirmOrder from "./pages/ConfirmOrder";
+import OrderHistory from './pages/OrderHistory';
+import ConfirmedOrders from './pages/ConfirmedOrders';
+import OrderDetails from './pages/OrderDetails';
 
 const App = () => {
   return (
@@ -25,6 +28,9 @@ const App = () => {
             <Route path="/home" element={<Home />} />
             <Route path="/products" element={<Products />} />
             <Route path="/order" element={<ConfirmOrder />} />
+            <Route path="/historial/" element={<OrderHistory />} />
+            <Route path="/confirmed-orders" element={<ConfirmedOrders />} />
+            <Route path="/order-details/:idorden" element={<OrderDetails />} />
           </Routes>
         </Router>
       </AuthProvider>

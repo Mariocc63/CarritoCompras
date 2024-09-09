@@ -29,15 +29,15 @@ const LoginForm = () => {
   });
 
   useEffect(() => {
-    if (auth.user) {
+    if (auth && auth.user && auth.user.data && auth.user.data.length > 0) {
       // Redirigir basándose en el rol después de iniciar sesión
-      if (auth.user.data[0]?.rol_idrol === 2) {
+      if (auth.user.data[0].rol_idrol === 2) {
         navigate('/products');
-      } else if (auth.user.data[0]?.rol_idrol === 1) {
-        navigate('/home');
+      } else if (auth.user.data[0].rol_idrol === 1) {
+        navigate('/confirmed-orders');
       }
     }
-  }, [auth.user, navigate]);
+  }, [auth, navigate]);
 
   const onSubmit = async (data) => {
     try {

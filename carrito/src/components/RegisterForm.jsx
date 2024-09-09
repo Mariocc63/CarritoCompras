@@ -2,12 +2,13 @@ import React, { useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { TextField, Button, Box, Typography } from '@mui/material';
+import { TextField, Button, Box, Typography, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 // Validación con Yup
 const schema = yup.object().shape({
+  rol_idrol: yup.string().required('El rol es obligatorio'),
   nombre_completo: yup.string().required('El nombre es obligatorio'),
   correo_electronico: yup.string().email('Correo inválido').required('El correo es obligatorio'),
   contrasenia: yup.string().min(6, 'La contraseña debe tener al menos 6 caracteres').required('La contraseña es obligatoria'),
@@ -30,12 +31,12 @@ const RegisterForm = () => {
 
     const fecha = new Date(data.fecha_nacimiento);
     const fechaFormatoCorrecto = fecha.toISOString().split('T')[0];
-    const nueva_data = {"nombre_completo": data.nombre_completo, "correo_electronico": data.correo_electronico,
+    const rolNumero = data.rol_idrol === "Operador Administrativo" ? 1 : 2;
+
+    const nueva_data = {"rol_idrol": rolNumero, "nombre_completo": data.nombre_completo, "correo_electronico": data.correo_electronico,
       "contrasenia": data.contrasenia, "telefono": data.telefono, "fecha_nacimiento": fechaFormatoCorrecto}
     
     try {
-      
-      
 
       const user = await registerUser(nueva_data);  // Llamar a la función registerUser del contexto
       setAuth(user);
@@ -54,6 +55,19 @@ const RegisterForm = () => {
     <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
       <Typography variant="h5">Registro de Usuario</Typography>
       
+      <FormControl fullWidth margin="normal">
+        <InputLabel>Rol</InputLabel>
+        <Select
+          {...register('rol_idrol')}
+          error={!!errors.rol_idrol}
+          defaultValue=""
+        >
+          <MenuItem value="Operador Administrativo">Operador Administrativo</MenuItem>
+          <MenuItem value="Cliente">Cliente</MenuItem>
+        </Select>
+        {errors.rol_idrol && <Typography color="error">{errors.rol_idrol.message}</Typography>}
+      </FormControl>
+
       <TextField
         label="Nombre"
         {...register('nombre_completo')}

@@ -7,6 +7,7 @@ const {generarToken} = require("../middleware.js");
 
 exports.crearUsuario= async (req,res) => {
     const {
+        rol_idrol,
         correo_electronico, 
         nombre_completo, 
         contrasenia, 
@@ -34,6 +35,7 @@ exports.crearUsuario= async (req,res) => {
         
                 await sequelize.query(
                     `EXEC InsertarUsuarios
+                     :rol_idrol,
                      :correo_electronico,
                      :nombre_completo,
                      :contrasenia,
@@ -41,6 +43,7 @@ exports.crearUsuario= async (req,res) => {
                      :fecha_nacimiento` ,
                     {
                         replacements: { 
+                            rol_idrol,
                             correo_electronico, 
                             nombre_completo, 
                             contrasenia: contraseniaEncriptada, 

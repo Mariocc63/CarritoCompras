@@ -119,6 +119,7 @@ exports.crearOrden= async (req,res) => {
 exports.actualizarOrden = async (req, res) => {
     const { idorden } = req.params;
     const campos  = req.body;
+    const comentarioProcesado = campos.comentarios === undefined ? null : campos.comentarios;
 
     if(!idorden || Object.keys(campos).length === 0) {
         return res.status(400).json({error: "No hay campos para actualizar"})
@@ -135,7 +136,8 @@ exports.actualizarOrden = async (req, res) => {
             @direccion = :direccion,
             @telefono = :telefono,
             @correo_electronico = :correo_electronico, 
-            @fecha_entrega = :fecha_entrega` ,
+            @fecha_entrega = :fecha_entrega,
+            @comentarios = :comentarios` ,
             //":total_orden",
             {
                 replacements: { 
@@ -147,7 +149,8 @@ exports.actualizarOrden = async (req, res) => {
                     direccion: campos.direccion || null,
                     telefono: campos.telefono || null,
                     correo_electronico: campos.correo_electronico || null,
-                    fecha_entrega: campos.fecha_entrega || null
+                    fecha_entrega: campos.fecha_entrega || null,
+                    comentarios: comentarioProcesado
                     //total_orden: campos.total_orden || null
                 },
                 type: sequelize.QueryTypes.UPDATE
@@ -170,16 +173,38 @@ exports.verOrdenes = async (req, res) => {
 
         const ordenes = await sequelize.query(
             `select * from Ver_Ordenes_Confirmadas` ,
-            //":total_orden",
             {
-                
                 type: sequelize.QueryTypes.SELECT
             }
         );
-        res.status(200).json({ordenes});
+
+        let historial = {ordenes:[]};
+
+        for(encabezado of ordenes) {
+            //console.log(encabezado);
+            
+            const idorden = encabezado.idorden;
+            let detalle = await sequelize.query(`EXEC Historial_Ordenes 
+                @orden_idorden = :idorden`, {
+                    replacements: {
+                        idorden
+                    },
+                    type: sequelize.QueryTypes.SELECT
+                }
+
+            );
+            let orden = {
+                ...encabezado,
+                detalles: detalle
+            }
+
+            historial.ordenes.push(orden);
+        }
+
+        return res.status(200).json({historial});
     }
     catch (error) {
-        console.error("Error al actualizar la orden", error)
+        console.error("Error al ver las ordenes confirmadas", error)
         res.status(500).json({meesage: "Error al ver las ordenes confirmadas"});
     }
     
@@ -219,7 +244,8 @@ exports.HistorialOrdenesUsuario = async (req, res) => {
     try {
 
         const ordenes = await sequelize.query(
-            `select * from orden where usuarios_idusuarios = :usuarios_idusuarios` ,
+            `EXEC Historial 
+            @usuarios_idusuarios = :usuarios_idusuarios` ,
             {
                 replacements: {
                     usuarios_idusuarios
@@ -234,11 +260,8 @@ exports.HistorialOrdenesUsuario = async (req, res) => {
             //console.log(encabezado);
             
             const idorden = encabezado.idorden;
-            let detalle = await sequelize.query(`select p.nombre as 'producto', o.cantidad as 'cantidad',
-                 o.precio as 'precio', o.subtotal as 'subtotal'
-                from productos p
-                join ordendetalles o on p.idproductos = o.productos_idproductos
-                where o.orden_idorden = :idorden`, {
+            let detalle = await sequelize.query(`EXEC Historial_Ordenes 
+                @orden_idorden = :idorden`, {
                     replacements: {
                         idorden
                     },

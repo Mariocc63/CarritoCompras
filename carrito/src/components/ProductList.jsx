@@ -1,19 +1,22 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { getProducts } from '../api/products';
-import { Box, Typography, Card, CardContent, CardMedia, Grid, Button, IconButton, AppBar, Toolbar } from '@mui/material';
+import { Box, Typography, Card, CardContent, CardMedia, Grid, Button, IconButton, AppBar, Toolbar, Menu, MenuItem } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import '../styles/style.css';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { CartContext } from '../context/CartContext'; // Importar el CartContext
+
 
 const ProductList = ({ token }) => {
   const { auth, logoutUser } = useContext(AuthContext);
   const { cart, subtotal, addToCart, decreaseQuantity, removeFromCart, clearCart } = useContext(CartContext); // Usar el contexto del carrito
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -53,6 +56,20 @@ const ProductList = ({ token }) => {
     clearCart();
   }
 
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleNavigate = (path) => {
+    navigate(path);
+    handleMenuClose();
+  };
+
+
   return (
     <Box>
       <Typography variant="h4" gutterBottom>Lista de Productos</Typography>
@@ -79,6 +96,7 @@ const ProductList = ({ token }) => {
           </Grid>
         ))}
       </Grid>
+      
 
       <AppBar>
         <Toolbar>
@@ -123,13 +141,41 @@ const ProductList = ({ token }) => {
               Cancelar Compra
             </Button>
         </Toolbar>
+        <IconButton 
+        aria-controls="simple-menu" 
+        aria-haspopup="true" 
+        onClick={handleMenuOpen}
+        style={{ position: 'absolute', top: 10, right: 10 }}
+      >
+        <MoreVertIcon />
+      </IconButton>
+
+      <Menu
+        id="simple-menu"
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      >
+        <MenuItem onClick={() => handleNavigate('/historial')}>Historial de Órdenes</MenuItem>
+        <MenuItem onClick={CerrarSesion}>Cerrar Sesión</MenuItem>
+      </Menu>
+      
       </AppBar>
-      <Button variant="contained" 
+      {/* <Button variant="contained" 
             color="secondary" 
             onClick={CerrarSesion}
       >
             Cerrar sesión
     </Button>
+     */}
     </Box>
   );
 };
