@@ -2,27 +2,23 @@ import React, { useContext } from 'react';
 import { Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
-const ProtectedRoute = ({ component: Component }) => {
+const ProtectedRoute = ({ children, requiredRole }) => {
   const { auth } = useContext(AuthContext);
 
-  if (!auth.token) {
-    return <Navigate to="/login" />; // Si no está autenticado, redirigir a login
+  // Verificar si el usuario está autenticado
+  if (!auth || !auth.user) {
+    // Si no está autenticado, redirige al login
+    return <Navigate to="/login" />;
   }
 
-  // Si es cliente (idrol === 2), redirigir a la página de productos
-  if (auth.user.data[0].rol_idrol === 2) {
-    console.log(auth.user.data[0].rol_idrol);
-    return <Navigate to="/products" />;
+  // Verificar si el rol del usuario coincide con el requerido
+  if (requiredRole && auth.user.data[0].rol_idrol !== requiredRole) {
+    // Si el usuario no tiene el rol adecuado, redirige a una página de acceso denegado
+    return <Navigate to="/access-denied" />;
   }
 
-  // Si es admin (idrol === 1), mostrar el componente pasado como props (Home)
-  if (auth.user.data[0].rol_idrol === 1) {
-    console.log(auth.user.data[0].rol_idrol);
-    return <Component />;
-  }
-
-  // Para cualquier otro rol, redirigir al login (opcional)
-  //return <Navigate to="/login" />;
+  // Si todo está bien, renderiza la ruta protegida
+  return children;
 };
 
 export default ProtectedRoute;

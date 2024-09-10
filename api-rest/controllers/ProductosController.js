@@ -216,3 +216,57 @@ exports.VerProductosPorCategoria = async (req, res) => {
     }
     
 };
+
+//Activar productos cuando la categoria se habilita
+exports.ActivarProductos = async (req, res) => {
+    const { idcategoria } = req.params;
+
+    try {
+        
+          await sequelize.query(
+                `EXEC ActivarProductos
+                @categoriaproductos_idcategoriaproductos = :idcategoria`,
+            {
+                replacements: { 
+                    idcategoria
+                },
+                type: sequelize.QueryTypes.UPDATE
+            }
+        );
+       return res.status(200).json({message: "Productos de la categoria activados correctamente"});
+        
+        
+    }
+    catch (error) {
+        //console.error("Error al actualizar el producto", error)
+        res.status(500).json({message: "Error al activar los productos de la categoria"});
+    }
+    
+};
+
+//Desactivar productos cuando la categoria se inhabilita
+exports.DesactivarProductos = async (req, res) => {
+    const { idcategoria } = req.params;
+
+    try {
+        
+          await sequelize.query(
+                `EXEC DesactivarProductos
+                @categoriaproductos_idcategoriaproductos = :idcategoria`,
+            {
+                replacements: { 
+                    idcategoria
+                },
+                type: sequelize.QueryTypes.UPDATE
+            }
+        );
+       return res.status(200).json({message: "Productos de la categoria desactivados correctamente"});
+        
+        
+    }
+    catch (error) {
+        //console.error("Error al actualizar el producto", error)
+        res.status(500).json({message: "Error al desactivar los productos de la categoria"});
+    }
+    
+};

@@ -13,6 +13,16 @@ import ConfirmOrder from "./pages/ConfirmOrder";
 import OrderHistory from './pages/OrderHistory';
 import ConfirmedOrders from './pages/ConfirmedOrders';
 import OrderDetails from './pages/OrderDetails';
+import ProtectedRoute from './components/ProtectedRoute';
+import AccessDenied from './pages/AccessDenied';
+import ViewCategories from './pages/ViewCategories';
+import EditCategory from './pages/EditCategory';
+import AddCategory from './pages/AddCategory';
+
+const ROLES = {
+  OPERADOR_ADMINISTRATIVO: 1,
+  CLIENTE: 2
+};
 
 const App = () => {
   return (
@@ -25,12 +35,71 @@ const App = () => {
             <Route path="/" element={<SinAutenticar/>} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/products" element={<Products />} />
-            <Route path="/order" element={<ConfirmOrder />} />
-            <Route path="/historial/" element={<OrderHistory />} />
-            <Route path="/confirmed-orders" element={<ConfirmedOrders />} />
-            <Route path="/order-details/:idorden" element={<OrderDetails />} />
+            <Route
+              path="/products"
+              element={
+                <ProtectedRoute requiredRole={ROLES.CLIENTE}>
+                  <Products />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/order"
+              element={
+                <ProtectedRoute requiredRole={ROLES.CLIENTE}>
+                  <ConfirmOrder />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/historial"
+              element={
+                <ProtectedRoute requiredRole={ROLES.CLIENTE}>
+                  <OrderHistory />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/confirmed-orders"
+              element={
+                <ProtectedRoute requiredRole={ROLES.OPERADOR_ADMINISTRATIVO}>
+                  <ConfirmedOrders />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/order-details/:idorden"
+              element={
+                <ProtectedRoute requiredRole={ROLES.OPERADOR_ADMINISTRATIVO}>
+                  <OrderDetails />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/viewcategories"
+              element={
+                <ProtectedRoute requiredRole={ROLES.OPERADOR_ADMINISTRATIVO}>
+                  <ViewCategories/>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/edit-category/:idcategoria"
+              element={
+                <ProtectedRoute requiredRole={ROLES.OPERADOR_ADMINISTRATIVO}>
+                  <EditCategory />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/añadircategoria"
+              element={
+                <ProtectedRoute requiredRole={ROLES.OPERADOR_ADMINISTRATIVO}>
+                  <AddCategory/>
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/access-denied" element={<AccessDenied />} />
           </Routes>
         </Router>
       </AuthProvider>
@@ -43,12 +112,7 @@ const App = () => {
 const SinAutenticar = () => {
   const { auth } = useContext(AuthContext);
 
-  if (!auth.user) {
-    // Redirige al login si no hay usuario autenticado
-    return <Navigate to="/login" />;
-  }
-
-  return <Home />;
+  return <Login/>
 };
 
 export default App;

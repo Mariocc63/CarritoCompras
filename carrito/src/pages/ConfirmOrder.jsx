@@ -66,7 +66,7 @@ const ConfirmOrder = () => {
     const fechaFormatoCorrecto = fecha.toISOString().split('T')[0];
     try {
       // Preparar los datos para el formato maestro-detalle
-      console.log(cart);
+      //console.log(cart);
       const orderData = { 
           nombre_completo: data.nombre_completo,
           direccion: data.direccion,

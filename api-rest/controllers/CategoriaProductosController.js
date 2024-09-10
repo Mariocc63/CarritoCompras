@@ -41,10 +41,10 @@ exports.crearCategoriaProductos = async (req,res) => {
 
 //Actualizacion de Categoria de productos
 exports.actualizarCategoriaProductos = async (req, res) => {
-    const { idcategoriaproductos } = req.params;
+    const { idcategoria } = req.params;
     const campos  = req.body;
 
-    if(!idcategoriaproductos || Object.keys(campos).length === 0) {
+    if(!idcategoria || Object.keys(campos).length === 0) {
         return res.status(400).json({message: "No hay campos para actualizar"})
     }
 
@@ -52,14 +52,14 @@ exports.actualizarCategoriaProductos = async (req, res) => {
 
         await sequelize.query(
             `EXEC ActualizarCategoriasProductos 
-            @idcategoriaproductos = :idcategoriaproductos,
+            @idcategoriaproductos = :idcategoria,
             @usuarios_idusuarios = :usuarios_idusuarios,
             @nombre = :nombre,
             @estados_idestados = :estados_idestados,
             @fecha_creacion = :fecha_creacion`,
             {
                 replacements: { 
-                    idcategoriaproductos,
+                    idcategoria,
                     usuarios_idusuarios: campos.usuarios_idusuarios || null,
                     nombre: campos.nombre || null, 
                     estados_idestados: campos.estados_idestados || null,
@@ -77,7 +77,7 @@ exports.actualizarCategoriaProductos = async (req, res) => {
     
 };
 
-exports.verCategoriaProductosActivos = async (req, res) => {
+exports.verCategoriaProductos = async (req, res) => {
     try {
         const categoriaproductos = await sequelize.query(
             `select * from Ver_Categoria_Productos`, 
@@ -90,3 +90,72 @@ exports.verCategoriaProductosActivos = async (req, res) => {
         res.status(400).json({message: "Error al cargar la categoria de productos"});
     }
 }
+
+exports.verCategoriaProducto = async (req, res) => {
+    const {idcategoria} = req.params;
+    try {
+        const categoriaproducto = await sequelize.query(
+            `EXEC Ver_Categoria
+            @idcategoria = :idcategoria`, 
+            
+            {  
+                replacements: {
+                    idcategoria
+                },
+                type: sequelize.QueryTypes.SELECT }
+            )
+            return res.status(200).json({categoriaproducto})  
+        }
+        
+    catch (error) {
+        console.log(error);
+        return res.status(400).json({message: "Error al cargar la categoria"});
+    }
+}
+
+//ver productos de una categoria activa
+exports.verCategoriaProductoActivo = async (req, res) => {
+    const {idcategoria} = req.params;
+    try {
+        const productos = await sequelize.query(
+            `EXEC Productos_CategoriaActiva
+            @idcategoria = :idcategoria`, 
+            
+            {  
+                replacements: {
+                    idcategoria
+                },
+                type: sequelize.QueryTypes.SELECT }
+            )
+            return res.status(200).json({productos}) 
+        }
+        
+    catch (error) {
+        console.log(error);
+        return res.status(400).json({message: "Error al cargar los productos"});
+    }
+}
+
+//ver productos de una categoria inactiva
+exports.verCategoriaProductoInactivo = async (req, res) => {
+    const {idcategoria} = req.params;
+    try {
+        const productos = await sequelize.query(
+            `EXEC Productos_CategoriaInactiva
+            @idcategoria = :idcategoria`, 
+            
+            {  
+                replacements: {
+                    idcategoria
+                },
+                type: sequelize.QueryTypes.SELECT }
+            )
+            return res.status(200).json({productos}) 
+        }
+        
+    catch (error) {
+        console.log(error);
+        return res.status(400).json({message: "Error al cargar los productos"});
+    }
+}
+

@@ -5,10 +5,18 @@ const {autenticarToken, verificarRol,dicciorioRoles} = require("../middleware.js
 
 router.post("/categoriaproductos", autenticarToken, verificarRol(dicciorioRoles["Operador administrativo"]), 
 CategoriaProductosController.crearCategoriaProductos);
-router.put("/categoriaproductos/:idcategoriaproductos", autenticarToken, 
+router.put("/categoriaproductos/:idcategoria", autenticarToken, 
     verificarRol(dicciorioRoles["Operador administrativo"]), CategoriaProductosController.actualizarCategoriaProductos)
 router.get("/vercategoriaproductos", autenticarToken, 
-    verificarRol(dicciorioRoles["Operador administrativo"]), CategoriaProductosController.verCategoriaProductosActivos)
+    verificarRol(dicciorioRoles["Operador administrativo"]), CategoriaProductosController.verCategoriaProductos)
+router.get("/vercategoria/:idcategoria", autenticarToken, 
+    verificarRol(dicciorioRoles["Operador administrativo"]), CategoriaProductosController.verCategoriaProducto)
+router.get("/vercatproductosactivos/:idcategoria", autenticarToken, 
+    verificarRol(dicciorioRoles["Operador administrativo"]), CategoriaProductosController.verCategoriaProductoActivo)
+router.get("/vercatproductosinactivos/:idcategoria", autenticarToken, 
+    verificarRol(dicciorioRoles["Operador administrativo"]), CategoriaProductosController.verCategoriaProductoInactivo)
+        
+    
 
 //router.put("/estados/:idestados",EstadoController.actualizarEstado);
 

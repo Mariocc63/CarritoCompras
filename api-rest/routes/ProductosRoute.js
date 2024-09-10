@@ -25,6 +25,11 @@ ProductosController.verProductosActivos)
 router.get("/verproductoscategoria/:categoriaproductos_idcategoriaproductos", 
     autenticarToken, verificarRol(dicciorioRoles["Operador administrativo"]),
     ProductosController.VerProductosPorCategoria)
+
+router.put("/activarproductos/:idcategoria", autenticarToken, verificarRol(dicciorioRoles["Operador administrativo"]),
+ProductosController.ActivarProductos)    
+router.put("/desactivarproductos/:idcategoria", autenticarToken, verificarRol(dicciorioRoles["Operador administrativo"]),
+ProductosController.DesactivarProductos)  
 //router.put("/estados/:idestados",EstadoController.actualizarEstado);
 
 module.exports = router;
