@@ -6,8 +6,9 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import axios from 'axios';
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Menu, MenuItem, IconButton } from '@mui/material';
 import { AuthContext } from '../context/AuthContext';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 
 // Definir el esquema de validación
@@ -26,7 +27,8 @@ const validationSchema = yup.object().shape({
 const ConfirmOrder = () => {
   const { cart, subtotal, clearCart } = useContext(CartContext);
   const [openDialog, setOpenDialog] = useState(false);
-  const {auth} = useContext(AuthContext);
+  const {auth, logoutUser} = useContext(AuthContext);
+  const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
 
   const [shippingData, setShippingData] = useState({
@@ -61,6 +63,19 @@ const ConfirmOrder = () => {
     setOpenDialog(false);
   };
 
+  const CerrarSesion = () => {
+    logoutUser();
+    navigate("/login");
+  }
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
   const onSubmit = async (data) => {
     const fecha = new Date(data.fecha_entrega);
     const fechaFormatoCorrecto = fecha.toISOString().split('T')[0];
@@ -78,7 +93,7 @@ const ConfirmOrder = () => {
             cantidad: item.cantidad,
         })),
       };
-      console.log(cart[0]);
+      //console.log(cart[0]);
       //console.log(orderData.detalles_orden[0]);
 
       // Enviar los datos al backend
@@ -205,6 +220,31 @@ const ConfirmOrder = () => {
         </Button>
       </DialogActions>
     </Dialog>
+    <IconButton 
+        aria-controls="simple-menu" 
+        aria-haspopup="true" 
+        onClick={handleMenuOpen}
+        style={{ position: 'absolute', top: 10, right: 10 }}
+      >
+        <MoreVertIcon />
+      </IconButton>
+
+      <Menu
+        id="simple-menu"
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      >
+        <MenuItem onClick={CerrarSesion}>Cerrar Sesión</MenuItem>
+      </Menu>
     </Box>
   );
 };

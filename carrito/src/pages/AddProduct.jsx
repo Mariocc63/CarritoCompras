@@ -5,11 +5,12 @@ import * as yup from 'yup';
 import axios from 'axios';
 import {
   TextField, Button, Dialog, DialogActions, DialogContent, DialogContentText,
-  DialogTitle, InputLabel, Select, MenuItem, FormControl, Typography, IconButton, Box
+  DialogTitle, InputLabel, Select, MenuItem, Menu, FormControl, Typography, IconButton, Box
 } from '@mui/material';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import ClearIcon from '@mui/icons-material/Clear';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 // Define the validation schema
 const schema = yup.object().shape({
@@ -35,13 +36,7 @@ const schema = yup.object().shape({
     .typeError('Ingrese un número válido')
     .min(0, 'El precio debe ser un número positivo')
     .required("El precio es requerido"),
-  foto: yup.mixed().required('La foto es requerida')
-    .test('fileSize', 'El archivo es muy grande', value => {
-      return value && value.size <= 2000000; // Limitar a 2MB
-    })
-    .test('fileType', 'Solo se permiten imágenes (jpg, png)', value => {
-      return value && ['image/jpeg', 'image/png'].includes(value.type);
-    })
+    foto: yup.mixed().required('La foto es requerida')
 });
 
 const AddProduct = () => {
@@ -49,11 +44,13 @@ const AddProduct = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [imageName, setImageName] = useState('');
-  const { auth } = useContext(AuthContext);
+  const [selectedCategoryName, setSelectedCategoryName] = useState('');
+  const { auth, logoutUser } = useContext(AuthContext);
   const fileInputRef = useRef(null);
+  const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
   
-  const { register, handleSubmit, reset, formState: { errors } } = useForm({
+  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm({
     resolver: yupResolver(schema)
   });
 
@@ -90,6 +87,8 @@ const AddProduct = () => {
     } else {
       setImageName('');
     }
+
+    setValue("foto", selectedFile)
   };
 
   const handleRemoveFile = () => {
@@ -131,6 +130,23 @@ const AddProduct = () => {
     }
   };
 
+  const CerrarSesion = () => {
+    logoutUser();
+    navigate("/login");
+  }
+
+  const handleGoBack = () => {
+    navigate('/confirmed-orders');
+  };
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <Box padding={2}>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -143,6 +159,13 @@ const AddProduct = () => {
             {...register("categoria")}
             defaultValue=""
             error={!!errors.categoria}
+            onChange={(event) => {
+              const selectedCategoryId = event.target.value;
+              const selectedCategory = categorias.find(categoria => categoria.idcategoria === selectedCategoryId);
+              
+              setValue("categoria", selectedCategoryId);
+              setSelectedCategoryName(selectedCategory ? selectedCategory.categoria : '');
+            }}
           >
             {categorias.map(categoria => (
               <MenuItem key={categoria.idcategoria} value={categoria.idcategoria}>
@@ -150,6 +173,7 @@ const AddProduct = () => {
               </MenuItem>
             ))}
           </Select>
+
         </FormControl>
 
         <TextField
@@ -208,7 +232,7 @@ const AddProduct = () => {
           <input
             type="file"
             hidden
-            {...register("foto", { required: true })}
+            {...register("foto")}
             onChange={handleFileChange}
             ref={fileInputRef}
           />
@@ -226,7 +250,6 @@ const AddProduct = () => {
         <Button type="submit" variant="contained" color="primary" margin="normal">
           Registrar
         </Button>
-
       </form>
 
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
@@ -236,7 +259,7 @@ const AddProduct = () => {
             ¿Deseas confirmar el registro del producto con los siguientes datos?
           </DialogContentText>
           <Box>
-            <Typography variant="body2">Categoría: {shippingData.categoria}</Typography>
+            <Typography variant="body2">Categoría: {selectedCategoryName}</Typography>
             <Typography variant="body2">Producto: {shippingData.producto}</Typography>
             <Typography variant="body2">Marca: {shippingData.marca}</Typography>
             <Typography variant="body2">Código: {shippingData.codigo}</Typography>
@@ -246,10 +269,51 @@ const AddProduct = () => {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDialog(false)}>Cancelar</Button>
-          <Button onClick={handleConfirm} color="primary">Confirmar</Button>
+          <Button onClick={() => setOpenDialog(false)} color="secondary">
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleSubmit(handleConfirm)}
+              color="primary"
+            >
+            Confirmar
+          </Button>
         </DialogActions>
       </Dialog>
+      <IconButton 
+        aria-controls="simple-menu" 
+        aria-haspopup="true" 
+        onClick={handleMenuOpen}
+        style={{ position: 'absolute', top: 10, right: 10 }}
+      >
+        <MoreVertIcon />
+      </IconButton>
+
+      <Menu
+        id="simple-menu"
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      >
+        <MenuItem onClick={CerrarSesion}>Cerrar Sesión</MenuItem>
+      </Menu>
+      <Button
+        type="button"
+        variant="contained"
+        color="secondary"
+        onClick={handleGoBack}
+        style={{ marginLeft: '10px' }}
+      >
+        Regresar
+      </Button>
     </Box>
   );
 };
