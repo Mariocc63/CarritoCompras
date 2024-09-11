@@ -159,3 +159,21 @@ exports.verCategoriaProductoInactivo = async (req, res) => {
     }
 }
 
+exports.verCategoriaActiva = async (req, res) => {
+    try {
+        const categorias = await sequelize.query(
+            `select * from Categorias_Activas`, 
+            
+            {  
+                type: sequelize.QueryTypes.SELECT }
+            )
+            return res.status(200).json({categorias}) 
+        }
+        
+    catch (error) {
+        console.log(error);
+        return res.status(400).json({message: "Error al cargar las categorias"});
+    }
+}
+
+

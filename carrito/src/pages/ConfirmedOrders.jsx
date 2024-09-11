@@ -11,6 +11,7 @@ const ConfirmedOrders = () => {
   const { auth, logoutUser } = useContext(AuthContext);
   const [anchorEl, setAnchorEl] = useState(null);
   const [categoryAnchorEl, setCategoryAnchorEl] = useState(null);
+  const [productAnchorEl, setProductAnchorEl] = useState(null);
   const navigate = useNavigate();
 
   const CerrarSesion = () => {
@@ -48,6 +49,14 @@ const ConfirmedOrders = () => {
 
   const handleCategoryMenuClose = () => {
     setCategoryAnchorEl(null);
+  };
+
+  const handleProductMenuOpen = (event) => {
+    setProductAnchorEl(event.currentTarget);
+  };
+
+  const handleProductMenuClose = () => {
+    setProductAnchorEl(null);
   };
 
   const handleNavigate = (path) => {
@@ -114,7 +123,13 @@ const ConfirmedOrders = () => {
         </MenuItem>
 
         {/* Opciones de Productos */}
-        <MenuItem >Productos</MenuItem>
+        <MenuItem
+          onClick={handleProductMenuOpen}
+          aria-haspopup="true"
+        >
+          Productos
+        </MenuItem>
+        {/* <MenuItem onClick={() => handleNavigate('/viewproducts')}>Productos</MenuItem> */}
         <MenuItem onClick={CerrarSesion}>Cerrar Sesión</MenuItem>
       </Menu>
 
@@ -136,6 +151,24 @@ const ConfirmedOrders = () => {
         <MenuItem onClick={() => handleNavigate('/viewcategories')}>Ver Categorías</MenuItem>
         <Divider />
         <MenuItem onClick={() => handleNavigate('/añadircategoria')}>Agregar Categorías</MenuItem>
+      </Menu>
+      <Menu
+        id="product-menu"
+        anchorEl={productAnchorEl}
+        open={Boolean(productAnchorEl)}
+        onClose={handleProductMenuClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      >
+        <MenuItem onClick={() => handleNavigate('/viewproducts')}>Ver Productos</MenuItem>
+        <Divider />
+        <MenuItem onClick={() => handleNavigate('/addproduct')}>Agregar Productos</MenuItem>
       </Menu>
     </Box>
   );

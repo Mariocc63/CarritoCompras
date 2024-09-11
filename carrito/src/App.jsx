@@ -18,6 +18,9 @@ import AccessDenied from './pages/AccessDenied';
 import ViewCategories from './pages/ViewCategories';
 import EditCategory from './pages/EditCategory';
 import AddCategory from './pages/AddCategory';
+import ViewProducts from './pages/ViewProducts';
+import EditProduct from './pages/EditProduct';
+import AddProduct from './pages/AddProduct';
 
 const ROLES = {
   OPERADOR_ADMINISTRATIVO: 1,
@@ -96,6 +99,30 @@ const App = () => {
               element={
                 <ProtectedRoute requiredRole={ROLES.OPERADOR_ADMINISTRATIVO}>
                   <AddCategory/>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/viewproducts"
+              element={
+                <ProtectedRoute requiredRole={ROLES.OPERADOR_ADMINISTRATIVO}>
+                  <ViewProducts/>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/edit-product/:idproductos"
+              element={
+                <ProtectedRoute requiredRole={ROLES.OPERADOR_ADMINISTRATIVO}>
+                  <EditProduct />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/addproduct"
+              element={
+                <ProtectedRoute requiredRole={ROLES.OPERADOR_ADMINISTRATIVO}>
+                  <AddProduct />
                 </ProtectedRoute>
               }
             />

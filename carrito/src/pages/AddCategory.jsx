@@ -157,14 +157,14 @@ const AddCategory = () => {
         <MenuItem onClick={CerrarSesion}>Cerrar Sesión</MenuItem>
       </Menu>
       <Button
-            type="button"
-            variant="contained"
-            color="secondary"
-            onClick={handleGoBack}
-            style={{ marginLeft: '10px' }}
-          >
-            Regresar
-          </Button>
+        type="button"
+        variant="contained"
+        color="secondary"
+        onClick={handleGoBack}
+        style={{ marginLeft: '10px' }}
+      >
+        Regresar
+      </Button>
     </Box>
   );
 };

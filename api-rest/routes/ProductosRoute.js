@@ -22,6 +22,11 @@ router.put("/productos/:idproductos", subida.single("foto"), autenticarToken, ve
  ProductosController.actualizarProductos)
 router.get("/verproductos/", autenticarToken, verificarRol(dicciorioRoles["Cliente"]), 
 ProductosController.verProductosActivos)
+router.get("/verproductoscompletos/", autenticarToken, verificarRol(dicciorioRoles["Operador administrativo"]), 
+ProductosController.verProductosCompletos)
+router.get("/verproductoindividual/:idproductos", autenticarToken, verificarRol(dicciorioRoles["Operador administrativo"]), 
+ProductosController.verProductoIndividual)
+
 router.get("/verproductoscategoria/:categoriaproductos_idcategoriaproductos", 
     autenticarToken, verificarRol(dicciorioRoles["Operador administrativo"]),
     ProductosController.VerProductosPorCategoria)

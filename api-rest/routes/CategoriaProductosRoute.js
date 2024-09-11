@@ -11,11 +11,14 @@ router.get("/vercategoriaproductos", autenticarToken,
     verificarRol(dicciorioRoles["Operador administrativo"]), CategoriaProductosController.verCategoriaProductos)
 router.get("/vercategoria/:idcategoria", autenticarToken, 
     verificarRol(dicciorioRoles["Operador administrativo"]), CategoriaProductosController.verCategoriaProducto)
+
 router.get("/vercatproductosactivos/:idcategoria", autenticarToken, 
     verificarRol(dicciorioRoles["Operador administrativo"]), CategoriaProductosController.verCategoriaProductoActivo)
 router.get("/vercatproductosinactivos/:idcategoria", autenticarToken, 
     verificarRol(dicciorioRoles["Operador administrativo"]), CategoriaProductosController.verCategoriaProductoInactivo)
-        
+
+router.get("/vercategorias", autenticarToken, 
+    verificarRol(dicciorioRoles["Operador administrativo"]), CategoriaProductosController.verCategoriaActiva)        
     
 
 //router.put("/estados/:idestados",EstadoController.actualizarEstado);

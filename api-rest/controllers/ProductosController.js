@@ -80,9 +80,14 @@ exports.crearProductos = async (req,res) => {
 exports.actualizarProductos = async (req, res) => {
     const { idproductos } = req.params;
     const campos  = req.body;
+    const file = req.file;
+    //console.log(campos);
 
     if(!idproductos || Object.keys(campos).length === 0) {
-        return res.status(400).json({error: "No hay campos para actualizar"})
+        if(file === undefined) {
+            return res.status(400).json({error: "No hay campos para actualizar"})
+        }
+        
     }
 
     try {
@@ -96,7 +101,8 @@ exports.actualizarProductos = async (req, res) => {
             @estados_idestados = :estados_idestados,
             @precio = :precio,
             @fecha_creacion = :fecha_creacion`.toString();
-        if(!req.file) {
+
+        if(!file) {
             
             await sequelize.query(query1,
             {
@@ -122,7 +128,7 @@ exports.actualizarProductos = async (req, res) => {
         
         else {
 
-            const nuevaImagen = req.file.originalname;
+            const nuevaImagen = file.originalname;
             const nuevaruta = path.join("images", nuevaImagen);
 
             const [producto] = await sequelize.query(`Select foto 
@@ -139,8 +145,11 @@ exports.actualizarProductos = async (req, res) => {
 
             }
 
+            //console.log(producto.foto);
+
             if(producto.foto) {
                 const rutaImagenAntigua = path.join(__dirname, "..", "images", producto.foto)
+                
                 fs.unlink(rutaImagenAntigua, (error) => {
                     if(error) {
                         return res.status(400).json({message: "Error al actualizar la imagen"})
@@ -190,6 +199,43 @@ exports.verProductosActivos = async (req, res) => {
         res.status(408).json({message: "Error al cargar los productos"});
     }
 }
+
+exports.verProductosCompletos = async (req, res) => {
+    try {
+        const productos = await sequelize.query(
+            `select * from Ver_Productos_Completos`, 
+            {  type: sequelize.QueryTypes.SELECT }
+            )
+            return res.status(200).json({productos})  
+        }
+        
+    catch (error) {
+       return res.status(408).json({message: "Error al cargar los productos"});
+    }
+}
+
+exports.verProductoIndividual = async (req, res) => {
+    const {idproductos} = req.params;
+
+    try {
+        const producto = await sequelize.query(
+            `EXEC Ver_Producto_Individual
+            @idproductos = :idproductos`, 
+            {
+                replacements: {
+                    idproductos
+                }
+            },
+            {  type: sequelize.QueryTypes.SELECT }
+            )
+            return res.status(200).json({producto})  
+        }
+        
+    catch (error) {
+       return res.status(408).json({message: "Error al cargar el producto"});
+    }
+}
+
 
 exports.VerProductosPorCategoria = async (req, res) => {
     const { categoriaproductos_idcategoriaproductos } = req.params;

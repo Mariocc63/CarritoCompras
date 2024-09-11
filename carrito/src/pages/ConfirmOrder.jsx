@@ -74,10 +74,12 @@ const ConfirmOrder = () => {
           correo_electronico: data.correo_electronico,
           fecha_entrega: fechaFormatoCorrecto,
           detalles_orden: cart.map(item => ({
-            productos_idproductos: item.producto.id,
+            productos_idproductos: item.producto.idproductos,
             cantidad: item.cantidad,
         })),
       };
+      console.log(cart[0]);
+      //console.log(orderData.detalles_orden[0]);
 
       // Enviar los datos al backend
       await axios.post('http://localhost:5000/api/orden/detalles', orderData, {
