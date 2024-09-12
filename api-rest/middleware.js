@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const SECRET_KEY = '12345'; //palabra clave
+const SECRET_KEY = '12345';
 const dicciorioRoles = {"Operador administrativo": 1, "Cliente": 2}
 
 function generarToken (datos) {
@@ -25,15 +25,13 @@ function autenticarToken(req, res, next)  {
             return res.status(403).json({ message: "token inválido o expirado" });
         }
         req.datos = decodificado;
-        next(); // Pasar al siguiente middleware o controlador de ruta
+        next();
     });
 }
 
 function verificarRol(rol) {
     return  (req, res, next) => {
         if(req.datos.datos.rol_idrol !== rol) {
-            //console.log(req.datos.datos.rol_idrol)
-            //console.log(rol);
             return res.status(403).json({message: "Acceso denegado"})
         }
         next();

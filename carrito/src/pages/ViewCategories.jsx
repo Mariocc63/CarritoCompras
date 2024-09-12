@@ -26,7 +26,7 @@ const ViewCategories = () => {
     };
 
     fetchCategories();
-  }, []);
+  }, [auth.token]);
 
   const handleGoBackTo = () => {
     navigate("/confirmed-orders");
@@ -45,40 +45,50 @@ const ViewCategories = () => {
     navigate("/login");
   }
 
-
   const handleEditClick = (idcategoria) => {
     navigate(`/edit-category/${idcategoria}`);
   };
 
   return (
     <Box p={3}>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h4" gutterBottom sx={{ mb: 4, textAlign: 'center'}}>
         Categorías de Productos
       </Typography>
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} elevation={3} sx={{ borderRadius: '10px', overflow: 'hidden' }}>
         <Table>
-          <TableHead>
+          <TableHead sx={{ bgcolor: '#f5f5f5' }}>
             <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Categoría</TableCell>
-              <TableCell>Usuario</TableCell>
-              <TableCell>Estado</TableCell>
-              <TableCell>Fecha de Creación</TableCell>
-              <TableCell>Acciones</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>ID</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Categoría</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Agregado por</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Estado</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Fecha de Creación</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {categories.map((category) => (
               <TableRow key={category.idcategoria}>
-                <TableCell>{category.idcategoria}</TableCell>
-                <TableCell>{category.categoria}</TableCell>
-                <TableCell>{category.usuario}</TableCell>
-                <TableCell>{category.estado}</TableCell>
-                <TableCell>{new Date(category.fecha_creacion).toLocaleDateString()}</TableCell>
-                <TableCell>
+                <TableCell sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
+                  {category.idcategoria}
+                </TableCell>
+                <TableCell sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
+                  {category.categoria}
+                </TableCell>
+                <TableCell sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
+                  {category.usuario}
+                </TableCell>
+                <TableCell sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
+                  {category.estado}
+                </TableCell>
+                <TableCell sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
+                  {new Date(category.fecha_creacion).toLocaleDateString()}
+                </TableCell>
+                <TableCell sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
                   <IconButton
                     color="primary"
                     onClick={() => handleEditClick(category.idcategoria)}
+                    sx={{ bgcolor: '#e0f7fa', '&:hover': { bgcolor: '#b2ebf2' }, borderRadius: '50%' }}
                   >
                     <EditIcon />
                   </IconButton>
@@ -114,13 +124,14 @@ const ViewCategories = () => {
         <MenuItem onClick={CerrarSesion}>Cerrar Sesión</MenuItem>
       </Menu>
       <Button
-          type="submit"
-          variant="contained"
-          color="secondary"
-          onClick={handleGoBackTo}
-        >
-          Regresar
-        </Button>
+        type="submit"
+        variant="contained"
+        color="secondary"
+        onClick={handleGoBackTo}
+        sx={{ mt: 3, display: 'block', mx: 'auto' }}
+      >
+        Regresar
+      </Button>
     </Box>
   );
 };

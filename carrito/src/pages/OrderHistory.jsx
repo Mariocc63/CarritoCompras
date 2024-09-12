@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Card, CardContent, Typography, Grid, IconButton, Menu, MenuItem, Button } from '@mui/material';
+import { Box, Card, CardContent, Typography, Grid, IconButton, Menu, MenuItem, Button, Divider } from '@mui/material';
 import { AuthContext } from '../context/AuthContext';
 import moment from 'moment';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -14,33 +14,27 @@ const OrderHistory = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const idusuarios = auth?.user?.data[0]?.idusuarios;
   const navigate = useNavigate();
-  const {clearCart} = useContext(CartContext);
+  const { clearCart } = useContext(CartContext);
   
-  //let idusuarios = null;
-
   useEffect(() => {
     if(idusuarios) {
         const fetchOrderHistory = async () => {
         try {
-            //console.log(auth.user.data[0]);
             const response = await axios.get(`http://localhost:5000/api/historial/detalles/${idusuarios}`, {
                 headers: { Authorization: `Bearer ${auth.token}` }
             });
             setOrderHistory(response.data.historial.ordenes);
         } catch (error) {
             console.error('Error al traer el historial de ordenes', error);
+        } finally {
+            setLoading(false);
         }
-        finally {
-            setLoading(false); // Una vez finalizado, cambiar el estado de carga
-            }
         };
         fetchOrderHistory();
-    }
-    else {
+    } else {
         setLoading(false);
     }
-
-  }, [idusuarios]);
+  }, [idusuarios, auth.token]);
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -54,68 +48,78 @@ const OrderHistory = () => {
     logoutUser();
     navigate("/login");
     clearCart();
-  }
+  };
 
   const handleGoBack = () => {
     navigate('/products');
-  }
+  };
 
   if (loading) {
-    return <div>Cargando historial de órdenes...</div>;
+    return <Box textAlign="center" padding={2}><Typography variant="h6">Cargando historial de órdenes...</Typography></Box>;
   }
 
   return (
-    <Box padding={2}>
-      <Typography variant="h4" gutterBottom>
+    <Box padding={4}>
+      <Typography variant="h4" gutterBottom align="center">
         Historial de Órdenes
       </Typography>
-      <Grid container spacing={2}>
-        {orderHistory.map((order) => (
-          <Grid item xs={12} sm={6} md={4} key={order.idorden}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6">
-                  Orden #{order.idorden}
-                </Typography>
-                <Typography>
-                  Fecha de Creación: {moment(order.fecha_creacion).format('YYYY/MM/DD HH:mm:ss')}
-                </Typography>
-                <Typography>
-                  Nombre: {order.nombre_completo}
-                </Typography>
-                <Typography>
-                  Dirección: {order.direccion}
-                </Typography>
-                <Typography>
-                  Fecha de entrega: {order.fecha_entrega}
-                </Typography>
-                <Typography>
-                  Total: Q{order.total_orden}
-                </Typography>
-                <Typography>
-                  Estado: {order.estado}
-                </Typography>
-                <Typography>
-                  Comentaios del pedido: {order.comentarios}
-                </Typography>
-                <Typography variant="h6">Detalles:</Typography>
-                <ul>
-                  {order.detalles.map((detalle, index) => (
-                    <li key={index}>
-                      {detalle.producto} - Cantidad: {detalle.cantidad} - Precio Q{detalle.precio} - Subtotal: Q{detalle.subtotal}
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
+      <Grid container spacing={3}>
+        {orderHistory.length === 0 ? (
+          <Box textAlign="center" width="100%">
+            <Typography variant="h6">No tienes órdenes en el historial.</Typography>
+          </Box>
+        ) : (
+          orderHistory.map((order) => (
+            <Grid item xs={12} sm={6} md={4} key={order.idorden} >
+              <Card variant="outlined" sx={{ borderRadius: 2, boxShadow: 3 }}>
+                <CardContent>
+                  <Typography variant="h6">
+                    Orden #{order.idorden}
+                  </Typography>
+                  <Divider sx={{ marginY: 2 }} />
+                  <Typography variant="body1">
+                    <strong>Fecha de Creación:</strong> {moment(order.fecha_creacion).format('DD/MM/YYYY HH:mm:ss')}
+                  </Typography>
+                  <Typography variant="body1">
+                    <strong>Nombre:</strong> {order.nombre_completo}
+                  </Typography>
+                  <Typography variant="body1">
+                    <strong>Dirección:</strong> {order.direccion}
+                  </Typography>
+                  <Typography variant="body1">
+                    <strong>Fecha de Entrega:</strong> {moment(order.fecha_entrega).format('DD/MM/YYYY')}
+                  </Typography>
+                  <Typography variant="body1">
+                    <strong>Total:</strong> Q{order.total_orden.toFixed(2)}
+                  </Typography>
+                  <Typography variant="body1">
+                    <strong>Estado:</strong> {order.estado}
+                  </Typography>
+                  <Typography variant="body1">
+                    <strong>Comentarios:</strong> {order.comentarios}
+                  </Typography>
+                  <Typography variant="h6" marginTop={2}>
+                    Detalles:
+                  </Typography>
+                  <ul>
+                    {order.detalles.map((detalle, index) => (
+                      <li key={index}>
+                        {detalle.producto} - Cantidad: {detalle.cantidad} - Precio Q{detalle.precio.toFixed(2)} - Subtotal: Q{detalle.subtotal.toFixed(2)}
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))
+        )}
       </Grid>
+
       <IconButton 
         aria-controls="simple-menu" 
         aria-haspopup="true" 
         onClick={handleMenuOpen}
-        style={{ position: 'absolute', top: 10, right: 10 }}
+        style={{ position: 'absolute', top: 16, right: 16 }}
       >
         <MoreVertIcon />
       </IconButton>
@@ -136,9 +140,12 @@ const OrderHistory = () => {
       >
         <MenuItem onClick={CerrarSesion}>Cerrar Sesión</MenuItem>
       </Menu>
-      <Button onClick={handleGoBack} color="secondary" variant="contained">
-        Regresar
-      </Button>
+
+      <Box textAlign="center" marginTop={4}>
+        <Button onClick={handleGoBack} color="secondary" variant="contained">
+          Regresar
+        </Button>
+      </Box>
     </Box>
   );
 };

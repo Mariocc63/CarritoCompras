@@ -11,7 +11,6 @@ import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
-// Definir el esquema de validación con yup
 const schema = yup.object({
   producto: yup.string().nullable(),
   marca: yup.string().nullable(),
@@ -19,18 +18,18 @@ const schema = yup.object({
   stock: yup.number()
     .nullable()
     .transform((originalValue) => {
-      if (originalValue === '') return null; // Convierte vacío a null
-      if (isNaN(Number(originalValue))) return null; // Convierte NaN a null
-      return Number(originalValue); // Asegura que sea un número
+      if (originalValue === '') return null; 
+      if (isNaN(Number(originalValue))) return null; 
+      return Number(originalValue); 
     })
     .typeError('Ingrese un número válido')
     .min(0, "El stock debe ser un número positivo"),
-    precio: yup.number()
+  precio: yup.number()
     .nullable()
     .transform((value, originalValue) => {
-      if (originalValue === '') return null; // Convierte vacío a null
+      if (originalValue === '') return null; 
       const num = parseFloat(originalValue);
-      return isNaN(num) ? null : num; // Convierte NaN a null
+      return isNaN(num) ? null : num; 
     })
     .typeError('Ingrese un número válido')
     .min(0, 'El precio debe ser un número positivo'),
@@ -66,19 +65,14 @@ const EditProduct = () => {
     },
   });
 
-  const watchFields = watch(); // Monitorea todos los campos del formulario
+  const watchFields = watch(); 
 
-  // Función para verificar si el formulario ha cambiado o si hay un archivo seleccionado
   const isFormValid = () => {
     const { producto, marca, codigo, stock, precio, estado } = watchFields;
-    // Verificar si todos los campos están vacíos
     const allFieldsEmpty =
       !producto && !marca && !codigo && !stock && !precio && !estado;
-    // El botón se habilita si hay algún campo cambiado o si hay un archivo seleccionado
     return !allFieldsEmpty || file;
   };
-
-  //const watchEstado = watch('estado'); // Monitorea el estado actual
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -100,7 +94,6 @@ const EditProduct = () => {
     const selectedFile = event.target.files[0];
     setFile(selectedFile);
 
-    // Mostrar el nombre del archivo seleccionado
     if (selectedFile) {
       setImageName(selectedFile.name);
     } else {
@@ -112,8 +105,8 @@ const EditProduct = () => {
     setFile(null);
     setImageName('');
     if (fileInputRef.current) {
-        fileInputRef.current.value = null; // Resetear el valor del input de archivo
-      }
+      fileInputRef.current.value = null; 
+    }
   };
 
   const handleConfirm = async (data) => {
@@ -136,6 +129,7 @@ const EditProduct = () => {
       alert('Producto actualizado con éxito');
       navigate('/viewproducts');
     } catch (error) {
+      alert("Error al actualizar el producto");
       console.error('Error al actualizar el producto:', error);
       alert('Error al actualizar el producto');
     }
@@ -155,7 +149,7 @@ const EditProduct = () => {
   }
 
   const handleGoBack = () => {
-    navigate('/confirmed-orders');
+    navigate('/viewproducts');
   };
 
   const handleMenuOpen = (event) => {
@@ -167,125 +161,144 @@ const EditProduct = () => {
   };
 
   return (
-    <Box padding={2}>
-      <Typography variant="h4" gutterBottom>
+    <Box padding={2} display="flex" flexDirection="column" alignItems="center">
+      <Typography variant="h4" gutterBottom align="center">
         Editar Producto: {product ? product.producto : 'Cargando...'}
       </Typography>
 
       {product && (
-        <form onSubmit={handleSubmit(handleDialogOpen)}>
-          <TextField
-            label="Producto"
-            fullWidth
-            margin="normal"
-            {...register('producto')}
-            error={!!errors.producto}
-            helperText={errors.producto?.message}
-          />
-          <TextField
-            label="Marca"
-            fullWidth
-            margin="normal"
-            {...register('marca')}
-            error={!!errors.marca}
-            helperText={errors.marca?.message}
-          />
-          <TextField
-            label="Código"
-            fullWidth
-            margin="normal"
-            {...register('codigo')}
-            error={!!errors.codigo}
-            helperText={errors.codigo?.message}
-          />
-          <TextField
-            label="Stock"
-            type="number"
-            InputProps={{ inputProps: { step: 1 } }}
-            fullWidth
-            margin="normal"
-            defaultValue={''}
-            {...register('stock')}
-            error={!!errors.stock}
-            helperText={errors.stock?.message}
-          />
-          <TextField
-            label="Precio"
-            type="number"
-            InputProps={{ inputProps: { step: 0.01 } }}
-            fullWidth
-            margin="normal"
-            {...register('precio')}
-            error={!!errors.precio}
-            helperText={errors.precio?.message}
-          />
+        <Box 
+          width="100%" 
+          maxWidth={600} 
+          padding={3} 
+          border={1} 
+          borderColor="grey.400" 
+          borderRadius={2}
+          boxShadow={3}
+          display="flex" 
+          flexDirection="column" 
+          alignItems="center"
+        >
+          <form onSubmit={handleSubmit(handleDialogOpen)} style={{ width: '100%' }}>
+            <TextField
+              label="Producto"
+              fullWidth
+              margin="normal"
+              {...register('producto')}
+              error={!!errors.producto}
+              helperText={errors.producto?.message}
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              label="Marca"
+              fullWidth
+              margin="normal"
+              {...register('marca')}
+              error={!!errors.marca}
+              helperText={errors.marca?.message}
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              label="Código"
+              fullWidth
+              margin="normal"
+              {...register('codigo')}
+              error={!!errors.codigo}
+              helperText={errors.codigo?.message}
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              label="Stock"
+              type="number"
+              InputProps={{ inputProps: { step: 1 } }}
+              fullWidth
+              margin="normal"
+              defaultValue={''}
+              {...register('stock')}
+              error={!!errors.stock}
+              helperText={errors.stock?.message}
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              label="Precio"
+              type="number"
+              InputProps={{ inputProps: { step: 0.01 } }}
+              fullWidth
+              margin="normal"
+              {...register('precio')}
+              error={!!errors.precio}
+              helperText={errors.precio?.message}
+              sx={{ mb: 2 }}
+            />
 
-          {/* Estado del producto */}
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Estado</InputLabel>
-            <Select
-              {...register('estado')}
-              value={watchFields.estado || ''}
-              error={!!errors.estado}
-            >
-              <MenuItem value="">Seleccionar Estado</MenuItem>
+            {/* Estado del producto */}
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Estado</InputLabel>
+              <Select
+                {...register('estado')}
+                value={watchFields.estado || ''}
+                error={!!errors.estado}
+              >
+                <MenuItem value="">Seleccionar Estado</MenuItem>
                 {product.estado === 5 && <MenuItem value="Inactivo">Inactivo</MenuItem>}
                 {product.estado === 6 && <MenuItem value="Activo">Activo</MenuItem>}
-            </Select>
-          </FormControl>
+              </Select>
+            </FormControl>
 
-          <Typography color="error">{errors.estado?.message}</Typography>
+            <Typography color="error" sx={{ mb: 2 }}>{errors.estado?.message}</Typography>
 
-          {/* Seleccionador de archivos */}
-          <Box marginTop={2}>
-            <Button variant="contained" component="label">
-              Subir Foto del Producto
-              <input type="file" hidden onChange={handleFileChange} />
-            </Button>
-            {imageName && (
-              <Box marginTop={2} display="flex" alignItems="center">
-                <Typography variant="body1" marginRight={2}>
-                  Imagen seleccionada: {imageName}
-                </Typography>
-                <IconButton onClick={handleRemoveFile} color="error">
-                  <ClearIcon />
-                </IconButton>
-              </Box>
-            )}
-            {!file && !imageName && (
-              <Typography color="textSecondary">No se ha seleccionado ninguna imagen</Typography>
-            )}
-          </Box>
+            {/* Seleccionador de archivos */}
+            <Box marginTop={2} display="flex" flexDirection="column" alignItems="center">
+              <Button variant="contained" color="secondary" component="label" sx={{ backgroundColor: '#388E3C'}}>
+                Cargar foto
+                <input type="file" hidden onChange={handleFileChange} ref={fileInputRef} />
+              </Button>
+              {imageName && (
+                <Box marginTop={2} display="flex" alignItems="center">
+                  <Typography variant="body2">{imageName}</Typography>
+                  <IconButton onClick={handleRemoveFile} sx={{ ml: 1 }}>
+                    <ClearIcon />
+                  </IconButton>
+                </Box>
+              )}
+            </Box>
 
-          <Box marginTop={2}>
-            <Button type="submit" variant="contained" color="primary" disabled={!isFormValid()}>
-              Guardar
-            </Button>
-          </Box>
-        </form>
+            <Box display="flex" justifyContent="center" marginTop={2}>
+              <Button variant="contained" color="primary" type="submit" disabled={!isFormValid()}>
+                Confirmar
+              </Button>
+            </Box>
+          </form>
+        </Box>
       )}
-
-      {/* Cuadro de diálogo de confirmación */}
+        <Box display="flex" justifyContent="center" marginTop={2}>
+        <Button variant="contained" color="secondary" onClick={handleGoBack}>
+          Volver
+        </Button>
+        </Box>
+      {/* Dialog de confirmación */}
       <Dialog open={dialogOpen} onClose={handleDialogClose}>
-        <DialogTitle>Confirmar Actualización</DialogTitle>
+        <DialogTitle>Confirmar Cambios</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            ¿Estás seguro de que deseas actualizar los siguientes datos del producto?
+            ¿Estás seguro de que quieres guardar los cambios realizados en este producto?
           </DialogContentText>
-          <Typography>Producto: {watch('producto')}</Typography>
-          <Typography>Marca: {watch('marca')}</Typography>
-          <Typography>Código: {watch('codigo')}</Typography>
-          <Typography>Stock: {watch('stock')}</Typography>
-          <Typography>Precio: {watch("precio") ? "Q" + watch("precio") : ""}</Typography>
-          <Typography>Estado: {watch('estado')}</Typography>
-          <Typography>Foto: {imageName}</Typography>
+          <Typography variant="body1">Producto: {watch('producto')}</Typography>
+          <Typography variant="body1">Marca: {watch('marca')}</Typography>
+          <Typography variant="body1">Código: {watch('codigo')}</Typography>
+          <Typography variant="body1">Stock: {watch('stock')}</Typography>
+          <Typography variant="body1">Precio: {watch("precio") ? "Q" + watch("precio") : ""}</Typography>
+          <Typography variant="body1">Estado: {watch('estado')}</Typography>
+          <Typography variant="body1">Foto: {imageName}</Typography>
         </DialogContent>
+
         <DialogActions>
-          <Button onClick={handleDialogClose} color="secondary">
-            Cancelar
-          </Button>
+          <Button onClick={handleDialogClose} color="secondary">Cancelar</Button>
           <Button
-            onClick={handleSubmit(handleConfirm)}
+            onClick={() => {
+              handleDialogClose();
+              handleSubmit(handleConfirm)();
+            }}
             color="primary"
           >
             Confirmar
@@ -317,15 +330,6 @@ const EditProduct = () => {
       >
         <MenuItem onClick={CerrarSesion}>Cerrar Sesión</MenuItem>
       </Menu>
-      <Button
-        type="button"
-        variant="contained"
-        color="secondary"
-        onClick={handleGoBack}
-        style={{ marginLeft: '10px' }}
-      >
-        Regresar
-      </Button>
     </Box>
   );
 };

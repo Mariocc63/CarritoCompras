@@ -2,14 +2,17 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Box, Typography, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, 
-    IconButton, Menu, MenuItem } from '@mui/material';
+    IconButton, Menu, MenuItem, Grid, 
+    List,
+    ListItem} from '@mui/material';
 import { AuthContext } from '../context/AuthContext';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import moment from 'moment';
 
 const ORDER_STATES = {
     ENTREGADO: 8,
     RECHAZADO: 9
-  };
+};
 
 const OrderDetails = () => {
   const { idorden } = useParams();
@@ -45,11 +48,11 @@ const OrderDetails = () => {
       },
       {
         headers: { Authorization: `Bearer ${auth.token}` }
-      }
-    );
+      });
       alert("Orden entregada correctamente");
       navigate('/confirmed-orders');
     } catch (error) {
+      alert("Error al entregar la orden");
       console.error('Error al confirmar la orden:', error);
     }
   };
@@ -62,11 +65,11 @@ const OrderDetails = () => {
       },
       {
         headers: { Authorization: `Bearer ${auth.token}` }
-      }
-    );
+      });
       alert("Orden rechazada correctamente");
       navigate('/confirmed-orders');
     } catch (error) {
+      alert("Error al rechazar la orden");
       console.error('Error al rechazar la orden:', error);
     }
   };
@@ -89,31 +92,49 @@ const OrderDetails = () => {
   }
 
   return (
-    <Box padding={2}>
+    <Box padding={2} display="flex" flexDirection="column" alignItems="center">
+      <Typography variant="h4" gutterBottom>
+        Detalles de la Orden
+      </Typography>
+      
       {order ? (
         <>
-          <Typography variant="h4">Detalles de la Orden</Typography>
-          <Typography>Orden #: {order.idorden}</Typography>
-          <Typography>Nombre: {order.nombre}</Typography>
-          <Typography>Dirección: {order.direccion}</Typography>
-          <Typography>Teléfono: {order.telefono}</Typography>
-          <Typography>Correo Electrónico: {order.correo_electronico}</Typography>
-          <Typography>Fecha de Entrega: {order.fecha_entrega}</Typography>
-          <Typography>Total: Q{order.total_orden}</Typography>
-          <Typography variant="h6">Detalles:</Typography>
-          <ul>
-            {order.detalles.map(detail => (
-              <li key={detail.producto}>
-                {detail.producto} - Cantidad: {detail.cantidad} - Precio: Q{detail.precio} - Subtotal: Q{detail.subtotal}
-              </li>
-            ))}
-          </ul>
-          <Button variant="contained" color="primary" onClick={() => setOpenConfirmDialog(true)}>
-            Entregar
-          </Button>
-          <Button variant="contained" color="secondary" onClick={() => setOpenRejectDialog(true)}>
-            Rechazar
-          </Button>
+          <Box textAlign="left" padding={3} width="100%" maxWidth="600px" bgcolor="#f5f5f5" borderRadius={2} boxShadow={3}>
+            <Typography variant="subtitle1">Orden #: {order.idorden}</Typography>
+            <Typography>Nombre: {order.nombre}</Typography>
+            <Typography>Dirección: {order.direccion}</Typography>
+            <Typography>Teléfono: {order.telefono}</Typography>
+            <Typography>Correo Electrónico: {order.correo_electronico}</Typography>
+            <Typography>Fecha de Entrega: {moment(order.fecha_entrega).format('DD/MM/YYYY')}</Typography>
+            <Typography>Total: Q{order.total_orden.toFixed(2)}</Typography>
+
+            <Typography variant="h6" gutterBottom>Detalles:</Typography>
+            <List>
+              {order.detalles.map((detail, index) => (
+                <ListItem key={index}>
+                  • {detail.producto} - Cantidad: {detail.cantidad} - Precio: Q{detail.precio.toFixed(2)} - Subtotal: Q{detail.subtotal.toFixed(2)}
+                </ListItem>
+              ))}
+            </List>
+
+            <Box display="flex" justifyContent="center" marginTop={2}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => setOpenConfirmDialog(true)}
+                style={{ marginRight: '10px' }}
+              >
+                Entregar
+              </Button>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => setOpenRejectDialog(true)}
+              >
+                Rechazar
+              </Button>
+            </Box>
+          </Box>
 
           <Dialog open={openConfirmDialog} onClose={() => setOpenConfirmDialog(false)}>
             <DialogTitle>Entregar Orden</DialogTitle>
@@ -156,9 +177,13 @@ const OrderDetails = () => {
       ) : (
         <Typography>Cargando detalles de la orden...</Typography>
       )}
-      <Button onClick={handleGoBack} color="default">
-        Regresar
-      </Button>
+
+      <Box marginTop={2}>
+        <Button onClick={handleGoBack} color="default" variant="outlined">
+          Regresar
+        </Button>
+      </Box>
+
       <IconButton 
         aria-controls="simple-menu" 
         aria-haspopup="true" 

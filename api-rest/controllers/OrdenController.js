@@ -34,7 +34,6 @@ exports.crearOrden= async (req,res) => {
             });
             subtotal = precio[0].precio * cantidad;
             total_orden += subtotal;
-            //console.log(precio);
         }
 
         const [ResultadoOrden] = await sequelize.query(
@@ -61,7 +60,6 @@ exports.crearOrden= async (req,res) => {
         );
 
         const orden_idorden = ResultadoOrden[0].id;
-        //console.log(ResultadoOrden);
 
         for(const detalle of detalles_orden) {
             let subtotal = 0;
@@ -102,7 +100,6 @@ exports.crearOrden= async (req,res) => {
             );
         }
 
-        //console.log(orden_idorden);
         await transaccion.commit();
 
         res.status(200).json({message: "Orden y detalles de orden agregados correctamente"});
@@ -138,11 +135,9 @@ exports.actualizarOrden = async (req, res) => {
             @correo_electronico = :correo_electronico, 
             @fecha_entrega = :fecha_entrega,
             @comentarios = :comentarios` ,
-            //":total_orden",
             {
                 replacements: { 
                     idorden, 
-                    //usuarios_idusuarios: campos.usuarios_idusuarios || null,
                     estados_idestados: campos.estados_idestados || null,
                     fecha_creacion: campos.fecha_creacion || null,
                     nombre_completo: campos.nombre_completo || null,
@@ -151,7 +146,6 @@ exports.actualizarOrden = async (req, res) => {
                     correo_electronico: campos.correo_electronico || null,
                     fecha_entrega: campos.fecha_entrega || null,
                     comentarios: comentarioProcesado
-                    //total_orden: campos.total_orden || null
                 },
                 type: sequelize.QueryTypes.UPDATE
             }
@@ -159,7 +153,6 @@ exports.actualizarOrden = async (req, res) => {
         res.status(200).json({message: "Actualizado correctamente"});
     }
     catch (error) {
-        //console.error("Error al actualizar la orden", error)
         res.status(500).json({meesage: "Error al actualizar la orden"});
     }
 
@@ -181,7 +174,6 @@ exports.verOrdenes = async (req, res) => {
         let historial = {ordenes:[]};
 
         for(encabezado of ordenes) {
-            //console.log(encabezado);
             
             const idorden = encabezado.idorden;
             let detalle = await sequelize.query(`EXEC Historial_Ordenes 
@@ -257,7 +249,6 @@ exports.HistorialOrdenesUsuario = async (req, res) => {
         let historial = {ordenes:[]};
 
         for(encabezado of ordenes) {
-            //console.log(encabezado);
             
             const idorden = encabezado.idorden;
             let detalle = await sequelize.query(`EXEC Historial_Ordenes 

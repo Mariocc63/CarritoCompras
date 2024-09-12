@@ -1,5 +1,6 @@
 const sequelize = require("../config/database").sequelize;
 
+//Creacion de categoria de productos
 exports.crearCategoriaProductos = async (req,res) => {
     const { 
         nombre} = req.body;
@@ -33,7 +34,6 @@ exports.crearCategoriaProductos = async (req,res) => {
             } 
             catch (error) {
                 res.status(400).json({message: "Error al crear la categoria de productos"});
-                //console.log(error);
             }
         }
 
@@ -71,7 +71,6 @@ exports.actualizarCategoriaProductos = async (req, res) => {
         res.status(200).json({message: "Actualizado correctamente"});
     }
     catch (error) {
-        //console.error("Error al actualizar la categoria de productos", error)
         res.status(500).json({message: "Error al actualizar la categoria de productos"});
     }
     
@@ -90,6 +89,7 @@ exports.verCategoriaProductos = async (req, res) => {
         res.status(400).json({message: "Error al cargar la categoria de productos"});
     }
 }
+
 
 exports.verCategoriaProducto = async (req, res) => {
     const {idcategoria} = req.params;
@@ -159,6 +159,7 @@ exports.verCategoriaProductoInactivo = async (req, res) => {
     }
 }
 
+//Ver todas las categorias activas
 exports.verCategoriaActiva = async (req, res) => {
     try {
         const categorias = await sequelize.query(

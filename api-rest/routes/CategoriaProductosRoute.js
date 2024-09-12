@@ -19,8 +19,6 @@ router.get("/vercatproductosinactivos/:idcategoria", autenticarToken,
 
 router.get("/vercategorias", autenticarToken, 
     verificarRol(dicciorioRoles["Operador administrativo"]), CategoriaProductosController.verCategoriaActiva)        
-    
 
-//router.put("/estados/:idestados",EstadoController.actualizarEstado);
 
 module.exports = router;

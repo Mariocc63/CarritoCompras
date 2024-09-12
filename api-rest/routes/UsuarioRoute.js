@@ -8,6 +8,6 @@ router.post("/usuario",
 router.put("/usuario/:idusuarios", UsuarioController.actualizarUsuario);
 router.post("/login",UsuarioController.login);
 router.get("/verusuario/", autenticarToken, UsuarioController.verUsuario);
-//router.put("/estados/:idestados",EstadoController.actualizarEstado);
+
 
 module.exports = router;

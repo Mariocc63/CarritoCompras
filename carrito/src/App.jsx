@@ -95,7 +95,7 @@ const App = () => {
               }
             />
             <Route
-              path="/añadircategoria"
+              path="/addcategory"
               element={
                 <ProtectedRoute requiredRole={ROLES.OPERADOR_ADMINISTRATIVO}>
                   <AddCategory/>
@@ -135,7 +135,6 @@ const App = () => {
   );
 };
 
-// Componente de ruta protegida para redirigir al login si no hay usuario autenticado
 const SinAutenticar = () => {
   const { auth } = useContext(AuthContext);
 

@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 const Home = () => {
   const { auth, logoutUser } = useContext(AuthContext);
   const navigate = useNavigate();
-  //console.log(auth.user);
 
   const CerrarSesion = () => {
     logoutUser();

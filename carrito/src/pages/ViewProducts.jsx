@@ -35,7 +35,7 @@ const ViewProducts = () => {
   const CerrarSesion = () => {
     logoutUser();
     navigate("/login");
-  }
+  };
 
   const handleGoBack = () => {
     navigate('/confirmed-orders');
@@ -50,40 +50,57 @@ const ViewProducts = () => {
   };
 
   return (
-    <Box padding={2}>
-      <Typography variant="h4" gutterBottom>
+    <Box padding={3}>
+      <Typography 
+        variant="h4" 
+        gutterBottom 
+        sx={{ mb: 4, textAlign: 'center'}}
+      >
         Lista de Productos
       </Typography>
-      <TableContainer component={Paper}>
+      <TableContainer 
+        component={Paper} 
+        elevation={3} 
+        sx={{ borderRadius: '10px', overflow: 'hidden' }}
+      >
         <Table>
-          <TableHead>
+          <TableHead sx={{ bgcolor: '#f5f5f5' }}>
             <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Producto</TableCell>
-              <TableCell>Marca</TableCell>
-              <TableCell>Código</TableCell>
-              <TableCell>Stock</TableCell>
-              <TableCell>Precio (Q)</TableCell>
-              <TableCell>Estado</TableCell>
-              <TableCell>Categoría</TableCell>
-              <TableCell>Agregado por</TableCell>
-              <TableCell>Acciones</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>ID</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Producto</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Marca</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Código</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Stock</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Precio</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Estado</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Categoría</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Agregado por</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {products.map((product) => (
-              <TableRow key={product.idproductos}>
+              <TableRow 
+                key={product.idproductos} 
+                sx={{
+                  '&:hover': { backgroundColor: '#f9f9f9' }, 
+                  transition: 'background-color 0.3s ease',
+                }}
+              >
                 <TableCell>{product.idproductos}</TableCell>
                 <TableCell>{product.producto}</TableCell>
                 <TableCell>{product.marca}</TableCell>
                 <TableCell>{product.codigo}</TableCell>
                 <TableCell>{product.stock}</TableCell>
-                <TableCell>{product.precio}</TableCell>
+                <TableCell>Q{product.precio.toFixed(2)}</TableCell>
                 <TableCell>{product.estado}</TableCell>
                 <TableCell>{product.categoria}</TableCell>
                 <TableCell>{product.agregado_por}</TableCell>
                 <TableCell>
-                  <IconButton onClick={() => handleEdit(product.idproductos)}>
+                  <IconButton
+                    onClick={() => handleEdit(product.idproductos)}
+                    sx={{ bgcolor: '#e3f2fd', '&:hover': { bgcolor: '#bbdefb' }, borderRadius: '50%' }}
+                  >
                     <EditIcon />
                   </IconButton>
                 </TableCell>
@@ -117,12 +134,17 @@ const ViewProducts = () => {
       >
         <MenuItem onClick={CerrarSesion}>Cerrar Sesión</MenuItem>
       </Menu>
+
       <Button
         type="button"
         variant="contained"
         color="secondary"
         onClick={handleGoBack}
-        style={{ marginLeft: '10px' }}
+        sx={{
+          mt: 3,
+          display: 'block',
+          mx: 'auto'
+        }}
       >
         Regresar
       </Button>

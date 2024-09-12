@@ -31,12 +31,10 @@ exports.crearProductos = async (req,res) => {
         }
         else {
             if(!req.file) {
-                //console.log(req.file);
                 res.status(400).json({message: "No se proporcionó una imagen"});
             }
             else {
                 const filename = req.file.originalname;
-                //console.log(req.file);
                 const foto = path.join("images",filename);
 
                 try {
@@ -81,7 +79,6 @@ exports.actualizarProductos = async (req, res) => {
     const { idproductos } = req.params;
     const campos  = req.body;
     const file = req.file;
-    //console.log(campos);
 
     if(!idproductos || Object.keys(campos).length === 0) {
         if(file === undefined) {
@@ -117,7 +114,6 @@ exports.actualizarProductos = async (req, res) => {
                     estados_idestados: campos.estados_idestados || null,
                     precio: campos.precio || null,
                     fecha_creacion: campos.fecha_creacion || null,
-                    //foto: campos.foto || null
                 },
                 type: sequelize.QueryTypes.UPDATE
             });
@@ -144,8 +140,6 @@ exports.actualizarProductos = async (req, res) => {
                 return res.status(404).json({message: "Producto no encontrado"});
 
             }
-
-            //console.log(producto.foto);
 
             if(producto.foto) {
                 const rutaImagenAntigua = path.join(__dirname, "..", "images", producto.foto)
@@ -257,7 +251,6 @@ exports.VerProductosPorCategoria = async (req, res) => {
         
     }
     catch (error) {
-        //console.error("Error al actualizar el producto", error)
         res.status(500).json({message: "Error al ver los productos"});
     }
     
@@ -284,8 +277,7 @@ exports.ActivarProductos = async (req, res) => {
         
     }
     catch (error) {
-        //console.error("Error al actualizar el producto", error)
-        res.status(500).json({message: "Error al activar los productos de la categoria"});
+        return res.status(500).json({message: "Error al activar los productos de la categoria"});
     }
     
 };
@@ -311,8 +303,7 @@ exports.DesactivarProductos = async (req, res) => {
         
     }
     catch (error) {
-        //console.error("Error al actualizar el producto", error)
-        res.status(500).json({message: "Error al desactivar los productos de la categoria"});
+        return res.status(500).json({message: "Error al desactivar los productos de la categoria"});
     }
     
 };

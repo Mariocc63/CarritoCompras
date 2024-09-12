@@ -4,12 +4,13 @@ import axios from 'axios';
 import {
   TextField, Button, Box, Typography, Dialog,
   DialogTitle, DialogContent, DialogActions, FormControl,
-  InputLabel, Select, MenuItem
+  InputLabel, Select, MenuItem, Paper, Menu, IconButton
 } from '@mui/material';
 import { AuthContext } from '../context/AuthContext';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 const schema = yup.object().shape({
   nombre: yup.string().nullable(),
@@ -17,17 +18,18 @@ const schema = yup.object().shape({
 });
 
 const EditCategory = () => {
-  const { auth, logoutUser } = useContext(AuthContext);
+  const { auth } = useContext(AuthContext);
   const { idcategoria } = useParams();
   const [productos, setProductos] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentState, setCurrentState] = useState(null);
   const [categoryName, setCategoryName] = useState('');
+  const [anchorEl, setAnchorEl] = useState(null);
   const [isEdited, setIsEdited] = useState(false);
   const [dialogContent, setDialogContent] = useState('');
   const navigate = useNavigate();
 
-  const { control, handleSubmit, formState: { errors }, watch, setValue } = useForm({
+  const { control, handleSubmit, formState: { errors }, watch } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
       nombre: "",
@@ -37,6 +39,11 @@ const EditCategory = () => {
 
   const watchedNombre = watch('nombre');
   const watchedEstado = watch('estado');
+
+  const ESTADOS = {
+    ACTIVO: 3,
+    INACTIVO: 4
+  }
 
   useEffect(() => {
     const fetchCategory = async () => {
@@ -52,7 +59,7 @@ const EditCategory = () => {
     };
 
     fetchCategory();
-  }, [idcategoria, auth.token, setValue]);
+  }, [idcategoria, auth.token]);
 
   useEffect(() => {
     setIsEdited(!!watchedNombre || !!watchedEstado);
@@ -60,7 +67,7 @@ const EditCategory = () => {
 
   const fetchProducts = async (state) => {
     try {
-      const fetchProductsUrl = state === 3
+      const fetchProductsUrl = state === ESTADOS.ACTIVO
         ? `http://localhost:5000/api/vercatproductosinactivos/${idcategoria}`
         : `http://localhost:5000/api/vercatproductosactivos/${idcategoria}`;
 
@@ -75,7 +82,7 @@ const EditCategory = () => {
 
   const onSubmit = async (data) => {
     try {
-      const newState = watchedEstado === 'Activo' ? 3 : watchedEstado === 'Inactivo' ? 4 : null;
+      const newState = watchedEstado === 'Activo' ? ESTADOS.ACTIVO : watchedEstado === 'Inactivo' ? ESTADOS.INACTIVO : null;
       let hasEditedNombre = false;
       let hasEditedEstado = false;
 
@@ -86,12 +93,11 @@ const EditCategory = () => {
         }, {
           headers: { Authorization: `Bearer ${auth.token}` },
         });
-        //console.log(watchedNombre);
       }
 
       if (newState !== null && newState !== currentState) {
         hasEditedEstado = true;
-        await fetchProducts(newState); // Cargar productos antes de mostrar el diálogo
+        await fetchProducts(newState);
       }
 
       let dialogMessage = '';
@@ -99,13 +105,13 @@ const EditCategory = () => {
       if (hasEditedNombre && !hasEditedEstado) {
         dialogMessage = `El nombre de la categoría ha sido actualizado a: ${watchedNombre}`;
       } else if (!hasEditedNombre && hasEditedEstado) {
-        const action = newState === 3 ? 'activarán' : 'desactivarán';
-        dialogMessage = `Los siguientes productos se ${action}: <br />` +
+        const action = newState === ESTADOS.ACTIVO ? 'activarán' : 'desactivarán';
+        dialogMessage = `La categoria: ${categoryName} y los siguientes productos se ${action}: <br />` +
           productos.map(producto => `${producto.nombre} - código: ${producto.codigo}`).join('<br />');
       } else if (hasEditedNombre && hasEditedEstado) {
-        const action = newState === 3 ? 'activarán' : 'desactivarán';
+        const action = newState === ESTADOS.ACTIVO ? 'activarán' : 'desactivarán';
         dialogMessage = `El nombre de la categoría ha sido actualizado a: ${watchedNombre}<br />` +
-          `Los siguientes productos se ${action}: <br />` +
+          `Y la categoria ${watchedNombre} y los siguientes productos se ${action}: <br />` +
           productos.map(producto => `${producto.nombre} - código: ${producto.codigo}`).join('<br />');
       }
 
@@ -119,7 +125,7 @@ const EditCategory = () => {
 
   const handleConfirm = async () => {
     try {
-      const newState = watchedEstado === 'Activo' ? 3 : watchedEstado === 'Inactivo' ? 4 : null;
+      const newState = watchedEstado === 'Activo' ? ESTADOS.ACTIVO : watchedEstado === 'Inactivo' ? ESTADOS.INACTIVO : null;
 
       if (newState !== null) {
         await axios.put(`http://localhost:5000/api/categoriaproductos/${idcategoria}`, {
@@ -127,9 +133,8 @@ const EditCategory = () => {
         }, {
           headers: { Authorization: `Bearer ${auth.token}` },
         });
-        //console.log(newState);
 
-        const updateProductsUrl = newState === 3
+        const updateProductsUrl = newState === ESTADOS.ACTIVO
           ? `http://localhost:5000/api/activarproductos/${idcategoria}`
           : `http://localhost:5000/api/desactivarproductos/${idcategoria}`;
 
@@ -138,85 +143,108 @@ const EditCategory = () => {
         });
       }
 
-      alert('Categoría y productos actualizados con éxito');
+      alert('Categoría actualizada con éxito');
       navigate('/viewcategories');
     } catch (error) {
+      alert("Error al actualizar la categoria");
       console.error('Error al actualizar la categoría o productos:', error);
     } finally {
       setDialogOpen(false);
     }
   };
 
+  const CerrarSesion = () => {
+    logoutUser();
+    navigate("/login");
+  };
+
   const handleGoBack = () => {
     navigate('/viewcategories');
   };
 
-  return (
-    <Box p={3}>
-      <Typography variant="h5" gutterBottom>
-        Editar Categoría: {categoryName}
-      </Typography>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <FormControl fullWidth margin="normal">
-          <TextField
-            label="Nombre de la categoría"
-            {...control.register('nombre')}
-            multiline
-            rows={2}
-            variant="outlined"
-          />
-        </FormControl>
-        <FormControl fullWidth margin="normal">
-          <InputLabel>Estado</InputLabel>
-          <Controller
-            name="estado"
-            control={control}
-            render={({ field }) => (
-              <Select
-                {...field}
-                label="Estado"
-                onChange={(event) => {
-                  field.onChange(event);
-                  const selectedState = event.target.value;
-                  if (selectedState) {
-                    fetchProducts(selectedState === 'Activo' ? 3 : 4);
-                  }
-                }}
-              >
-                <MenuItem value="">Seleccionar Estado</MenuItem>
-                {currentState === 3 && <MenuItem value="Inactivo">Inactivo</MenuItem>}
-                {currentState === 4 && <MenuItem value="Activo">Activo</MenuItem>}
-              </Select>
-            )}
-          />
-          {errors.estado && (
-            <Typography color="error" variant="body2">
-              {errors.estado.message}
-            </Typography>
-          )}
-        </FormControl>
-        <Box mt={2}>
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            disabled={!isEdited}
-          >
-            Continuar
-          </Button>
-          <Button
-            type="button"
-            variant="contained"
-            color="secondary"
-            onClick={handleGoBack}
-            style={{ marginLeft: '10px' }}
-          >
-            Regresar
-          </Button>
-        </Box>
-      </form>
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-      {/* Cuadro de diálogo para confirmar productos afectados o cambios */}
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+
+  return (
+    <Box p={3} display="flex" flexDirection="column" alignItems="center" height="100vh">
+      <Paper elevation={3} sx={{ padding: 3, width: '100%', maxWidth: 600 }}>
+        <Typography variant="h5" gutterBottom align="center">
+          Editar Categoría: {categoryName}
+        </Typography>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <FormControl fullWidth margin="normal">
+            <Controller
+              name="nombre"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Nombre de la categoría"
+                  multiline
+                  rows={2}
+                  variant="outlined"
+                  size="small"
+                  fullWidth
+                />
+              )}
+            />
+          </FormControl>
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Estado</InputLabel>
+            <Controller
+              name="estado"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  label="Estado"
+                  onChange={(event) => {
+                    field.onChange(event);
+                    const selectedState = event.target.value;
+                    if (selectedState) {
+                      fetchProducts(selectedState === 'Activo' ? ESTADOS.ACTIVO : ESTADOS.INACTIVO);
+                    }
+                  }}
+                  size="small"
+                >
+                  <MenuItem value="">Seleccionar Estado</MenuItem>
+                  {currentState === ESTADOS.ACTIVO && <MenuItem value="Inactivo">Inactivo</MenuItem>}
+                  {currentState === ESTADOS.INACTIVO && <MenuItem value="Activo">Activo</MenuItem>}
+                </Select>
+              )}
+            />
+            {errors.estado && (
+              <Typography color="error" variant="body2" mt={1}>
+                {errors.estado.message}
+              </Typography>
+            )}
+          </FormControl>
+          <Box mt={2} display="flex" justifyContent="center" gap={2}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={!isEdited}
+              size="large"
+            >
+              Continuar
+            </Button>
+          </Box>
+        </form>
+      </Paper>
+
+      <Box display="flex" justifyContent="center" marginTop={2}>
+        <Button variant="contained" color="secondary" onClick={handleGoBack}>
+          Volver
+        </Button>
+      </Box>
+
       <Dialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
@@ -236,6 +264,31 @@ const EditCategory = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      <IconButton 
+        aria-controls="simple-menu" 
+        aria-haspopup="true" 
+        onClick={handleMenuOpen}
+        style={{ position: 'absolute', top: 10, right: 10 }}
+      >
+        <MoreVertIcon />
+      </IconButton>
+
+      <Menu
+        id="simple-menu"
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      >
+        <MenuItem onClick={CerrarSesion}>Cerrar Sesión</MenuItem>
+      </Menu>
     </Box>
   );
 };

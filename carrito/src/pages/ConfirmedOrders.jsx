@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Box, Typography, Button, Card, CardContent, IconButton, Menu, MenuItem, Divider } from '@mui/material';
+import { Box, Typography, Button, Card, CardContent, IconButton, Menu, MenuItem, Divider, Container } from '@mui/material';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -40,7 +40,7 @@ const ConfirmedOrders = () => {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
-    setCategoryAnchorEl(null);  // Cierra el submenú si está abierto
+    setCategoryAnchorEl(null);
   };
 
   const handleCategoryMenuOpen = (event) => {
@@ -65,35 +65,39 @@ const ConfirmedOrders = () => {
   };
 
   return (
-    <Box padding={2}>
-      <Typography variant="h4" gutterBottom>
-        Órdenes Confirmadas
-      </Typography>
-      {orders.map(order => (
-        <Card key={order.idorden} sx={{ marginBottom: 2 }}>
-          <CardContent>
-            <Typography variant="h6">Orden #{order.idorden}</Typography>
-            <Typography>Nombre: {order.nombre}</Typography>
-            <Typography>Fecha de Creación: {new Date(order.fecha_creacion).toLocaleDateString()}</Typography>
-            <Typography>Total: Q{order.total_orden}</Typography>
-            <Link
-              to={{
-                pathname: `/order-details/${order.idorden}`,
-                state: { order } // Pasa la orden completa como estado
-              }}
-            >
-              <Button variant="contained" color="primary">
-                Ver Detalles
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-      ))}
+    <Container maxWidth="lg">
+      <Box padding={3}>
+      <Typography variant="h4" gutterBottom align="center">
+          Órdenes Confirmadas
+        </Typography>
+        {orders.length > 0 ? (
+          orders.map(order => (
+            <Card key={order.idorden} sx={{ marginBottom: 2, boxShadow: 3 }}>
+              <CardContent>
+                <Typography variant="h6">Orden #{order.idorden}</Typography>
+                <Typography variant="body1">Nombre: {order.nombre}</Typography>
+                <Typography variant="body1">Fecha de Creación: {new Date(order.fecha_creacion).toLocaleDateString()}</Typography>
+                <Typography variant="body1">Total: Q{order.total_orden.toFixed(2)}</Typography>
+                <Box mt={2}>
+                  <Link to={`/order-details/${order.idorden}`}>
+                    <Button variant="contained" color="primary">
+                      Ver Detalles
+                    </Button>
+                  </Link>
+                </Box>
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          <Typography variant="body1">No hay órdenes confirmadas.</Typography>
+        )}
+      </Box>
+
       <IconButton 
         aria-controls="simple-menu" 
         aria-haspopup="true" 
         onClick={handleMenuOpen}
-        style={{ position: 'absolute', top: 10, right: 10 }}
+        sx={{ position: 'fixed', top: 20, right: 20 }}
       >
         <MoreVertIcon />
       </IconButton>
@@ -114,7 +118,6 @@ const ConfirmedOrders = () => {
         }}
         keepMounted
       >
-        {/* Submenú de Categoría de Productos */}
         <MenuItem
           onClick={handleCategoryMenuOpen}
           aria-haspopup="true"
@@ -122,18 +125,15 @@ const ConfirmedOrders = () => {
           Categoría de Productos
         </MenuItem>
 
-        {/* Opciones de Productos */}
         <MenuItem
           onClick={handleProductMenuOpen}
           aria-haspopup="true"
         >
           Productos
         </MenuItem>
-        {/* <MenuItem onClick={() => handleNavigate('/viewproducts')}>Productos</MenuItem> */}
         <MenuItem onClick={CerrarSesion}>Cerrar Sesión</MenuItem>
       </Menu>
 
-      {/* Submenú para Categoría de Productos */}
       <Menu
         id="category-menu"
         anchorEl={categoryAnchorEl}
@@ -150,7 +150,7 @@ const ConfirmedOrders = () => {
       >
         <MenuItem onClick={() => handleNavigate('/viewcategories')}>Ver Categorías</MenuItem>
         <Divider />
-        <MenuItem onClick={() => handleNavigate('/añadircategoria')}>Agregar Categorías</MenuItem>
+        <MenuItem onClick={() => handleNavigate('/addcategory')}>Agregar Categorías</MenuItem>
       </Menu>
       <Menu
         id="product-menu"
@@ -170,7 +170,7 @@ const ConfirmedOrders = () => {
         <Divider />
         <MenuItem onClick={() => handleNavigate('/addproduct')}>Agregar Productos</MenuItem>
       </Menu>
-    </Box>
+    </Container>
   );
 };
 

@@ -5,14 +5,13 @@ import * as yup from 'yup';
 import axios from 'axios';
 import {
   TextField, Button, Dialog, DialogActions, DialogContent, DialogContentText,
-  DialogTitle, InputLabel, Select, MenuItem, Menu, FormControl, Typography, IconButton, Box
+  DialogTitle, InputLabel, Select, MenuItem, Menu, FormControl, Typography, IconButton, Box, Paper
 } from '@mui/material';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import ClearIcon from '@mui/icons-material/Clear';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
-// Define the validation schema
 const schema = yup.object().shape({
   categoria: yup.string().required("La categoría es requerida"),
   producto: yup.string().required("El nombre del producto es requerido"),
@@ -36,7 +35,7 @@ const schema = yup.object().shape({
     .typeError('Ingrese un número válido')
     .min(0, 'El precio debe ser un número positivo')
     .required("El precio es requerido"),
-    foto: yup.mixed().required('La foto es requerida')
+  foto: yup.mixed().required('La foto es requerida')
 });
 
 const AddProduct = () => {
@@ -88,19 +87,17 @@ const AddProduct = () => {
       setImageName('');
     }
 
-    setValue("foto", selectedFile)
+    setValue("foto", selectedFile);
   };
 
   const handleRemoveFile = () => {
     setSelectedFile(null);
     setImageName('');
-    if (fileInputRef.current) {
-        fileInputRef.current.value = null;
-    }
+    fileInputRef.current.value = null;
+    setValue("foto", null);
   };
 
   const onSubmit = (data) => {
-    console.log('Formulario enviado con datos:', data);
     setShippingData({
       ...data,
       foto: imageName
@@ -126,6 +123,7 @@ const AddProduct = () => {
       alert("Producto ingresado con éxito");
       navigate("/viewproducts");
     } catch (error) {
+      alert("Error al crear el producto");
       console.error('Error al ingresar el producto', error);
     }
   };
@@ -148,109 +146,114 @@ const AddProduct = () => {
   };
 
   return (
-    <Box padding={2}>
-      <form onSubmit={handleSubmit(onSubmit)}>
+    <Box padding={2} display="flex" flexDirection="column" alignItems="center">
+      <Typography variant="h4" gutterBottom>
+        Registro de Producto
+      </Typography>
+      
+      <Paper elevation={3} sx={{ padding: 3, width: '100%', maxWidth: 600 }}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Categoría</InputLabel>
+            <Select
+              {...register("categoria")}
+              defaultValue=""
+              error={!!errors.categoria}
+              onChange={(event) => {
+                const selectedCategoryId = event.target.value;
+                const selectedCategory = categorias.find(categoria => categoria.idcategoria === selectedCategoryId);
+                
+                setValue("categoria", selectedCategoryId);
+                setSelectedCategoryName(selectedCategory ? selectedCategory.categoria : '');
+              }}
+            >
+              {categorias.map(categoria => (
+                <MenuItem key={categoria.idcategoria} value={categoria.idcategoria}>
+                  {categoria.categoria}
+                </MenuItem>
+              ))}
+            </Select>
+            {errors.categoria && <Typography color="error">{errors.categoria.message}</Typography>}
+          </FormControl>
 
-        <Typography variant="h5">Registro de producto</Typography>
-
-        <FormControl fullWidth margin="normal">
-          <InputLabel>Categoría</InputLabel>
-          <Select
-            {...register("categoria")}
-            defaultValue=""
-            error={!!errors.categoria}
-            onChange={(event) => {
-              const selectedCategoryId = event.target.value;
-              const selectedCategory = categorias.find(categoria => categoria.idcategoria === selectedCategoryId);
-              
-              setValue("categoria", selectedCategoryId);
-              setSelectedCategoryName(selectedCategory ? selectedCategory.categoria : '');
-            }}
-          >
-            {categorias.map(categoria => (
-              <MenuItem key={categoria.idcategoria} value={categoria.idcategoria}>
-                {categoria.categoria}
-              </MenuItem>
-            ))}
-          </Select>
-
-        </FormControl>
-
-        <TextField
-          {...register("producto")}
-          label="Producto"
-          fullWidth
-          error={!!errors.producto}
-          helperText={errors.producto?.message}
-          margin="normal"
-        />
-
-        <TextField
-          {...register("marca")}
-          label="Marca"
-          fullWidth
-          error={!!errors.marca}
-          helperText={errors.marca?.message}
-          margin="normal"
-        />
-
-        <TextField
-          {...register("codigo")}
-          label="Código"
-          fullWidth
-          error={!!errors.codigo}
-          helperText={errors.codigo?.message}
-          margin="normal"
-        />
-
-        <TextField
-          {...register("stock")}
-          label="Stock"
-          type="number"
-          fullWidth
-          error={!!errors.stock}
-          helperText={errors.stock?.message}
-          margin="normal"
-        />
-
-        <TextField
-          {...register("precio")}
-          label="Precio"
-          type="number"
-          fullWidth
-          error={!!errors.precio}
-          helperText={errors.precio?.message}
-          margin="normal"
-        />
-
-        <Button
-          variant="contained"
-          component="label"
-          margin="normal"
-        >
-          Cargar Foto
-          <input
-            type="file"
-            hidden
-            {...register("foto")}
-            onChange={handleFileChange}
-            ref={fileInputRef}
+          <TextField
+            {...register("producto")}
+            label="Producto"
+            fullWidth
+            error={!!errors.producto}
+            helperText={errors.producto?.message}
+            margin="normal"
           />
-        </Button>
 
-        {selectedFile && (
-          <Box mt={2} display="flex" alignItems="center">
-            <Typography variant="body2">{imageName}</Typography>
-            <IconButton onClick={handleRemoveFile}>
-              <ClearIcon />
-            </IconButton>
+          <TextField
+            {...register("marca")}
+            label="Marca"
+            fullWidth
+            error={!!errors.marca}
+            helperText={errors.marca?.message}
+            margin="normal"
+          />
+
+          <TextField
+            {...register("codigo")}
+            label="Código"
+            fullWidth
+            error={!!errors.codigo}
+            helperText={errors.codigo?.message}
+            margin="normal"
+          />
+
+          <TextField
+            {...register("stock")}
+            label="Stock"
+            type="number"
+            fullWidth
+            error={!!errors.stock}
+            helperText={errors.stock?.message}
+            margin="normal"
+          />
+
+          <TextField
+            {...register("precio")}
+            label="Precio"
+            type="number"
+            fullWidth
+            error={!!errors.precio}
+            helperText={errors.precio?.message}
+            margin="normal"
+          />
+
+            <Box marginTop={2} display="flex" flexDirection="column" alignItems="center">
+            <Button variant="contained" color="secondary" component="label" sx={{ backgroundColor: '#388E3C'}}>
+                Cargar Foto
+                <input
+                  type="file"
+                  hidden
+                  {...register("foto")} 
+                  onChange={handleFileChange}
+                  ref={fileInputRef}
+                />
+              </Button>
+
+          {selectedFile && (
+            <Box mt={2} display="flex" alignItems="center" justifyContent="center">
+              <Typography variant="body2" sx={{ marginRight: 1 }}>{imageName}</Typography>
+              <IconButton onClick={handleRemoveFile}>
+                <ClearIcon />
+              </IconButton>
+            </Box>
+          )}
+            </Box>
+              
+
+
+          <Box display="flex" justifyContent="center" mt={2}>
+            <Button type="submit" variant="contained" color="primary">
+              Registrar
+            </Button>
           </Box>
-        )}
-
-        <Button type="submit" variant="contained" color="primary" margin="normal">
-          Registrar
-        </Button>
-      </form>
+        </form>
+      </Paper>
 
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>Confirmar Datos</DialogTitle>
@@ -264,59 +267,34 @@ const AddProduct = () => {
             <Typography variant="body2">Marca: {shippingData.marca}</Typography>
             <Typography variant="body2">Código: {shippingData.codigo}</Typography>
             <Typography variant="body2">Stock: {shippingData.stock}</Typography>
-            <Typography variant="body2">Precio: {shippingData.precio}</Typography>
+            <Typography variant="body2">Precio: Q{shippingData.precio.toFixed(2)}</Typography>
             <Typography variant="body2">Foto: {shippingData.foto}</Typography>
           </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenDialog(false)} color="secondary">
-              Cancelar
-            </Button>
-            <Button
-              onClick={handleSubmit(handleConfirm)}
-              color="primary"
-            >
+            Cancelar
+          </Button>
+          <Button onClick={handleConfirm} color="primary">
             Confirmar
           </Button>
         </DialogActions>
       </Dialog>
-      <IconButton 
-        aria-controls="simple-menu" 
-        aria-haspopup="true" 
-        onClick={handleMenuOpen}
-        style={{ position: 'absolute', top: 10, right: 10 }}
-      >
+
+      <Box mt={2} display="flex" justifyContent="center">
+        <Button onClick={handleGoBack} variant="contained" color="secondary">
+          Regresar
+        </Button>
+      </Box>
+
+      <IconButton onClick={handleMenuOpen} color="inherit" sx={{ position: 'absolute', top: 16, right: 16 }}>
         <MoreVertIcon />
       </IconButton>
-
-      <Menu
-        id="simple-menu"
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-      >
-        <MenuItem onClick={CerrarSesion}>Cerrar Sesión</MenuItem>
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+        <MenuItem onClick={CerrarSesion}>Cerrar sesión</MenuItem>
       </Menu>
-      <Button
-        type="button"
-        variant="contained"
-        color="secondary"
-        onClick={handleGoBack}
-        style={{ marginLeft: '10px' }}
-      >
-        Regresar
-      </Button>
     </Box>
   );
 };
-
 
 export default AddProduct;

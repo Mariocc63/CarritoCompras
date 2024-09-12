@@ -1,7 +1,7 @@
 const sequelize = require("../config/database").sequelize;
 const bcrypt = require("bcrypt");
 const { QueryTypes } = require("sequelize");
-const saltoRondas = 10; //costo del proceso de encriptacion
+const saltoRondas = 10; 
 const {generarToken} = require("../middleware.js");
 
 
@@ -104,7 +104,6 @@ exports.actualizarUsuario = async (req, res) => {
         res.status(200).json({message: "Actualizado correctamente"});
     }
     catch (error) {
-        //console.error("Error al actualizar el usuario", error)
         res.status(500).json({message: "Error al actualizar el usuario"});
     }   
 }
@@ -126,11 +125,8 @@ exports.login = async (req, res) => {
         });
         
         if(usuario.length > 0) {
-            //console.log(password[0].contrasenia);
-            //console.log(await bcrypt.hash(contrasenia, saltoRondas));
 
             const contraseñavalida = await bcrypt.compare(contrasenia, usuario[0].contrasenia);
-            //console.log(contraseñavalida);
 
             if(contraseñavalida) {
                 const datos = {"idusuario": usuario[0].idusuarios, 
@@ -150,7 +146,6 @@ exports.login = async (req, res) => {
         }
     }
     catch (error) {
-        //console.log(error);
         res.status(400).json({message: "Error al iniciar sesion"});
     }
 }

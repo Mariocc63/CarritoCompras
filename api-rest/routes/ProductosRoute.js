@@ -6,10 +6,10 @@ const multer = require("multer");
 
 const almacenamiento = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'images/'); // Carpeta de destino
+        cb(null, 'images/'); 
     },
     filename: (req, file, cb) => {
-        cb(null, file.originalname); // Guardar con el nombre original del archivo
+        cb(null, file.originalname); 
     }
 });
 
@@ -35,6 +35,5 @@ router.put("/activarproductos/:idcategoria", autenticarToken, verificarRol(dicci
 ProductosController.ActivarProductos)    
 router.put("/desactivarproductos/:idcategoria", autenticarToken, verificarRol(dicciorioRoles["Operador administrativo"]),
 ProductosController.DesactivarProductos)  
-//router.put("/estados/:idestados",EstadoController.actualizarEstado);
 
 module.exports = router;

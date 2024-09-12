@@ -2,32 +2,29 @@ import React, { useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { TextField, Button, Box, Typography, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import { TextField, Button, Box, Typography, MenuItem, Select, InputLabel, FormControl, Paper, Container } from '@mui/material';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
-// Validación con Yup
 const schema = yup.object().shape({
   rol_idrol: yup.string().required('El rol es obligatorio'),
   nombre_completo: yup.string().required('El nombre es obligatorio'),
   correo_electronico: yup.string().email('Correo inválido').required('El correo es obligatorio'),
   contrasenia: yup.string().min(6, 'La contraseña debe tener al menos 6 caracteres').required('La contraseña es obligatoria'),
   telefono: yup.string().matches(/^[0-9]+$/, 'Debe ser un número válido').required('El teléfono es obligatorio'),
-  fecha_nacimiento: yup.date().required('La fecha de nacimiento es obligatoria').nullable(),
+  fecha_nacimiento: yup.date().required('La fecha de nacimiento es obligatoria'),
 });
 
 const RegisterForm = () => {
-  const { registerUser } = useContext(AuthContext); 
+  const { registerUser, setAuth } = useContext(AuthContext); 
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
   });
-
-  const { setAuth } = useContext(AuthContext);  // Para actualizar el estado de autenticación
   const [registerError, setRegisterError] = useState(null);
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
-    setRegisterError(null);  // Limpiar error previo
+    setRegisterError(null); 
 
     const fecha = new Date(data.fecha_nacimiento);
     const fechaFormatoCorrecto = fecha.toISOString().split('T')[0];
@@ -37,99 +34,115 @@ const RegisterForm = () => {
       "contrasenia": data.contrasenia, "telefono": data.telefono, "fecha_nacimiento": fechaFormatoCorrecto}
     
     try {
-
-      const user = await registerUser(nueva_data);  // Llamar a la función registerUser del contexto
+      const user = await registerUser(nueva_data);
       setAuth(user);
       alert('Usuario registrado con éxito');
       navigate("/login");
-      //console.log('Usuario registrado con éxito');
     } catch (error) {
+      alert("Error al registrarse");
       setRegisterError('Error al registrar el usuario');
       console.error('Error:', error);
-      //console.log(nueva_data);
-      //console.log(fechaFormatoCorrecto);
     }
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
-      <Typography variant="h5">Registro de Usuario</Typography>
-      
-      <FormControl fullWidth margin="normal">
-        <InputLabel>Rol</InputLabel>
-        <Select
-          {...register('rol_idrol')}
-          error={!!errors.rol_idrol}
-          defaultValue=""
-        >
-          <MenuItem value="Operador Administrativo">Operador Administrativo</MenuItem>
-          <MenuItem value="Cliente">Cliente</MenuItem>
-        </Select>
-        {errors.rol_idrol && <Typography color="error">{errors.rol_idrol.message}</Typography>}
-      </FormControl>
+    <Box 
+      sx={{
+        minHeight: '100vh',
+        width: '100%', 
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f0f4f8',
+        padding: '20px',
+        boxSizing: 'border-box',
+      }}
+    >
+      <Container maxWidth="xs">
+        <Paper elevation={6} sx={{ padding: '30px', borderRadius: '15px', backgroundColor: 'rgba(255, 255, 255, 0.9)' }}>
+          <Typography variant="h5" align="center" gutterBottom>
+            Registro de Usuario
+          </Typography>
 
-      <TextField
-        label="Nombre"
-        {...register('nombre_completo')}
-        error={!!errors.nombre_completo}
-        helperText={errors.nombre_completo?.message}
-        fullWidth
-        margin="normal"
-      />
-      <TextField
-        label="Correo electrónico"
-        {...register('correo_electronico')}
-        error={!!errors.correo_electronico}
-        helperText={errors.correo_electronico?.message}
-        fullWidth
-        margin="normal"
-      />
-      <TextField
-        label="Contraseña"
-        type="password"
-        {...register('contrasenia')}
-        error={!!errors.contrasenia}
-        helperText={errors.contrasenia?.message}
-        fullWidth
-        margin="normal"
-      />
-      <TextField
-        label="Teléfono"
-        {...register('telefono')}
-        error={!!errors.telefono}
-        helperText={errors.telefono?.message}
-        fullWidth
-        margin="normal"
-      />
-      <TextField
-        label="Fecha de nacimiento"
-        type="date"
-        {...register('fecha_nacimiento')}
-        error={!!errors.fecha_nacimiento}
-        helperText={errors.fecha_nacimiento?.message}
-        fullWidth
-        margin="normal"
-        InputLabelProps={{ shrink: true }}  // Para que la etiqueta del campo de fecha se mantenga visible
-      />
+          <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Rol</InputLabel>
+              <Select
+                {...register('rol_idrol')}
+                error={!!errors.rol_idrol}
+                defaultValue=""
+              >
+                <MenuItem value="Operador Administrativo">Operador Administrativo</MenuItem>
+                <MenuItem value="Cliente">Cliente</MenuItem>
+              </Select>
+              {errors.rol_idrol && <Typography color="error">{errors.rol_idrol.message}</Typography>}
+            </FormControl>
 
-      {registerError && (
-        <Typography color="error" variant="body2">
-          {registerError}
-        </Typography>
-      )}
+            <TextField
+              label="Nombre"
+              {...register('nombre_completo')}
+              error={!!errors.nombre_completo}
+              helperText={errors.nombre_completo?.message}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Correo electrónico"
+              {...register('correo_electronico')}
+              error={!!errors.correo_electronico}
+              helperText={errors.correo_electronico?.message}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Contraseña"
+              type="password"
+              {...register('contrasenia')}
+              error={!!errors.contrasenia}
+              helperText={errors.contrasenia?.message}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Teléfono"
+              {...register('telefono')}
+              error={!!errors.telefono}
+              helperText={errors.telefono?.message}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Fecha de nacimiento"
+              type="date"
+              {...register('fecha_nacimiento')}
+              error={!!errors.fecha_nacimiento}
+              helperText={errors.fecha_nacimiento?.message}
+              fullWidth
+              margin="normal"
+              InputLabelProps={{ shrink: true }}
+            />
 
-      <Button type="submit" variant="contained" color="primary" fullWidth>
-        Registrarse
-      </Button>
-      <Button
-        variant="text"
-        color="secondary"
-        fullWidth
-        onClick={() => navigate('/login')}
-        style={{ marginTop: '1rem' }}
-      >
-        Regresar
-      </Button>
+            {registerError && (
+              <Typography color="error" variant="body2" align="center">
+                {registerError}
+              </Typography>
+            )}
+
+            <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
+              Registrarse
+            </Button>
+            <Button
+              variant="text"
+              color="secondary"
+              fullWidth
+              onClick={() => navigate('/login')}
+              sx={{ mt: 2 }}
+            >
+              Regresar
+            </Button>
+          </Box>
+        </Paper>
+      </Container>
     </Box>
   );
 };

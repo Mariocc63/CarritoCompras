@@ -8,12 +8,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import '../styles/style.css';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { CartContext } from '../context/CartContext'; // Importar el CartContext
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'; 
+import { CartContext } from '../context/CartContext'; 
 
 
 const ProductList = ({ token }) => {
   const { auth, logoutUser } = useContext(AuthContext);
-  const { cart, subtotal, addToCart, decreaseQuantity, removeFromCart, clearCart } = useContext(CartContext); // Usar el contexto del carrito
+  const { cart, subtotal, addToCart, decreaseQuantity, removeFromCart, clearCart } = useContext(CartContext); 
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -44,7 +45,6 @@ const ProductList = ({ token }) => {
   }
 
   const handleConfirmPurchase = () => {
-    // Implementar la lógica para confirmar la compra
     navigate("/order");
   };
 
@@ -79,7 +79,7 @@ const ProductList = ({ token }) => {
             <Card>
               <CardMedia
                 component="img"
-                height="140"
+                sx={{ height: 140, objectFit: 'cover', width: '100%' }}
                 image={`http://localhost:5000/${product.foto}`}
                 alt={product.producto}
               />
@@ -87,7 +87,7 @@ const ProductList = ({ token }) => {
                 <Typography variant="h6">{product.producto}</Typography>
                 <Typography variant="body2">Código: {product.codigo}</Typography>
                 <Typography variant="body2">Marca: {product.marca}</Typography>
-                <Typography variant="body2">Precio: Q{product.precio}</Typography>
+                <Typography variant="body2">Precio: Q{product.precio.toFixed(2)}</Typography>
                 <Button variant="contained" color="primary" onClick={() => addToCart(product)}>
                   Añadir al carrito
                 </Button>
@@ -96,16 +96,23 @@ const ProductList = ({ token }) => {
           </Grid>
         ))}
       </Grid>
+
       
 
       <AppBar>
         <Toolbar>
-          <Typography variant="h6">Carrito</Typography>
+        <IconButton
+            aria-label="carrito"
+            color="inherit"
+            style={{ marginRight: '16px' }}
+          >
+            <ShoppingCartIcon />
+          </IconButton>
           {cart.length > 0 ? (
             <div className='cart-container'>
               {cart.map((item, index) => (
                 <div key={index} className='cart-item'>
-                  <p>{item.producto.producto} - Q{item.producto.precio} x {item.cantidad} unidades</p>
+                  <p>{item.producto.producto} - Q{item.producto.precio.toFixed(2)} x {item.cantidad} {item.cantidad  === 1 ? "unidad" : "unidades"} = Subtotal: Q{(item.producto.precio * item.cantidad).toFixed(2)} </p>
                   <IconButton 
                     color="primary" 
                     onClick={() => addToCart(item.producto)} 
@@ -128,18 +135,31 @@ const ProductList = ({ token }) => {
                   </IconButton>
                 </div>
               ))}
-              <Typography variant="h6">Subtotal: Q{subtotal}</Typography>
+              <Typography variant="h6">Total: Q{subtotal.toFixed(2)}</Typography>
               
             </div>
           ) : (
             <p>El carrito está vacío</p>
           )}
-            <Button variant="contained" color="primary" onClick={handleConfirmPurchase} size='small' disabled={isCartEmpty}>
-              Confirmar Compra
-            </Button>
-            <Button variant="contained" color="secondary" onClick={clearCart} size='small'>
-              Cancelar Compra
-            </Button>
+            <Button
+                variant="contained"
+                color="secondary"
+                onClick={handleConfirmPurchase}
+                size="small"
+                disabled={isCartEmpty}
+                style={{ marginTop: '8px', backgroundColor: '#FF5722', color: '#FFFFFF' }} // Ajuste de color para contraste
+              >
+                Confirmar Compra
+              </Button>
+              <Button
+                variant="contained"
+                color="default"
+                onClick={clearCart}
+                size="small"
+                style={{ marginTop: '8px', backgroundColor: '#B0BEC5', color: '#000000' }} // Ajuste de color para contraste
+              >
+                Cancelar Compra
+              </Button>
         </Toolbar>
         <IconButton 
         aria-controls="simple-menu" 
@@ -169,13 +189,6 @@ const ProductList = ({ token }) => {
       </Menu>
       
       </AppBar>
-      {/* <Button variant="contained" 
-            color="secondary" 
-            onClick={CerrarSesion}
-      >
-            Cerrar sesión
-    </Button>
-     */}
     </Box>
   );
 };
