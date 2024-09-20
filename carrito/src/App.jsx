@@ -21,6 +21,7 @@ import AddCategory from './pages/AddCategory';
 import ViewProducts from './pages/ViewProducts';
 import EditProduct from './pages/EditProduct';
 import AddProduct from './pages/AddProduct';
+import Cart from './pages/Cart';
 
 const ROLES = {
   OPERADOR_ADMINISTRATIVO: 1,
@@ -43,6 +44,14 @@ const App = () => {
               element={
                 <ProtectedRoute requiredRole={ROLES.CLIENTE}>
                   <Products />
+                </ProtectedRoute>
+              }
+            />
+             <Route
+              path="/cart"
+              element={
+                <ProtectedRoute requiredRole={ROLES.CLIENTE}>
+                  <Cart />
                 </ProtectedRoute>
               }
             />

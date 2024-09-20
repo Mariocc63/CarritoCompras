@@ -65,6 +65,7 @@ const ConfirmOrder = () => {
   const CerrarSesion = () => {
     logoutUser();
     navigate("/login");
+    clearCart();
   };
 
   const handleMenuOpen = (event) => {
@@ -104,7 +105,7 @@ const ConfirmOrder = () => {
   };
 
   const handleGoBackToCart = () => {
-    navigate('/products');
+    navigate('/cart');
   };
 
   return (

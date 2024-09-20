@@ -12,7 +12,7 @@ const ConfirmedOrders = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [categoryAnchorEl, setCategoryAnchorEl] = useState(null);
   const [productAnchorEl, setProductAnchorEl] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState('all'); // Estado para controlar el filtro
+  const [selectedStatus, setSelectedStatus] = useState('all');
   const navigate = useNavigate();
 
   const CerrarSesion = () => {
