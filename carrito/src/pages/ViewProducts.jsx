@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const ViewProducts = () => {
   const [products, setProducts] = useState([]);
@@ -135,19 +136,16 @@ const ViewProducts = () => {
         <MenuItem onClick={CerrarSesion}>Cerrar Sesión</MenuItem>
       </Menu>
 
-      <Button
-        type="button"
-        variant="contained"
-        color="secondary"
-        onClick={handleGoBack}
-        sx={{
-          mt: 3,
-          display: 'block',
-          mx: 'auto'
-        }}
-      >
-        Regresar
-      </Button>
+      <Box position="absolute" top={10} left={10}>
+        <Button
+          type="button"
+          variant="contained"
+          color="secondary"
+          onClick={handleGoBack}
+          startIcon={<ArrowBackIcon />}
+        >
+        </Button>
+      </Box>
     </Box>
   );
 };

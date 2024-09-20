@@ -6,6 +6,7 @@ import { Box, Button, Table, TableBody, TableCell, TableContainer, TableHead, Ta
 import EditIcon from '@mui/icons-material/Edit';
 import { AuthContext } from '../context/AuthContext';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const ViewCategories = () => {
   const {auth, logoutUser} = useContext(AuthContext);
@@ -28,7 +29,7 @@ const ViewCategories = () => {
     fetchCategories();
   }, [auth.token]);
 
-  const handleGoBackTo = () => {
+  const handleGoBack = () => {
     navigate("/confirmed-orders");
   };
 
@@ -123,15 +124,16 @@ const ViewCategories = () => {
       >
         <MenuItem onClick={CerrarSesion}>Cerrar Sesión</MenuItem>
       </Menu>
-      <Button
-        type="submit"
-        variant="contained"
-        color="secondary"
-        onClick={handleGoBackTo}
-        sx={{ mt: 3, display: 'block', mx: 'auto' }}
-      >
-        Regresar
-      </Button>
+      <Box position="absolute" top={10} left={10}>
+        <Button
+          type="button"
+          variant="contained"
+          color="secondary"
+          onClick={handleGoBack}
+          startIcon={<ArrowBackIcon />}
+        >
+        </Button>
+      </Box>
     </Box>
   );
 };

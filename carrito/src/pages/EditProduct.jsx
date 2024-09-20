@@ -10,6 +10,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const schema = yup.object({
   producto: yup.string().nullable(),
@@ -163,7 +164,7 @@ const EditProduct = () => {
   return (
     <Box padding={2} display="flex" flexDirection="column" alignItems="center">
       <Typography variant="h4" gutterBottom align="center">
-        Editar Producto: {product ? product.producto : 'Cargando...'}
+        Editar Producto
       </Typography>
 
       {product && (
@@ -179,6 +180,17 @@ const EditProduct = () => {
           flexDirection="column" 
           alignItems="center"
         >
+          <Box display="flex" flexDirection="column" alignItems="flex-start" width="100%">
+            <Typography variant="h6">Información actual:</Typography>
+            <Typography>Poducto: {product.producto}</Typography>
+            <Typography>Marca: {product.marca}</Typography>
+            <Typography>Codigo: {product.codigo}</Typography>
+            <Typography>Stock: {product.producto}</Typography>
+            <Typography>Precio: Q{parseFloat(product.precio).toFixed(2)}</Typography>
+            <Typography>Estado: {product.estado === 5 ? "Activo" : "Inactivo"}</Typography>
+          </Box>
+          
+
           <form onSubmit={handleSubmit(handleDialogOpen)} style={{ width: '100%' }}>
             <TextField
               label="Producto"
@@ -271,12 +283,17 @@ const EditProduct = () => {
           </form>
         </Box>
       )}
-        <Box display="flex" justifyContent="center" marginTop={2}>
-        <Button variant="contained" color="secondary" onClick={handleGoBack}>
-          Volver
+      <Box position="absolute" top={10} left={10}>
+        <Button
+          type="button"
+          variant="contained"
+          color="secondary"
+          onClick={handleGoBack}
+          startIcon={<ArrowBackIcon />}
+        >
         </Button>
-        </Box>
-      {/* Dialog de confirmación */}
+      </Box>
+
       <Dialog open={dialogOpen} onClose={handleDialogClose}>
         <DialogTitle>Confirmar Cambios</DialogTitle>
         <DialogContent>

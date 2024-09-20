@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { AuthContext } from '../context/AuthContext';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const schema = yup.object().shape({
   nombre: yup.string().required('El nombre es obligatorio'),
@@ -160,14 +161,14 @@ const AddCategory = () => {
         <MenuItem onClick={CerrarSesion}>Cerrar Sesión</MenuItem>
       </Menu>
 
-      <Box mt={2} display="flex" justifyContent="center">
+      <Box position="absolute" top={10} left={10}>
         <Button
           type="button"
           variant="contained"
           color="secondary"
           onClick={handleGoBack}
+          startIcon={<ArrowBackIcon />}
         >
-          Regresar
         </Button>
       </Box>
     </Container>

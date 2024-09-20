@@ -10,6 +10,7 @@ import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, M
 import { AuthContext } from '../context/AuthContext';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import moment from 'moment';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const validationSchema = yup.object().shape({
   nombre_completo: yup.string().required('Nombre completo es requerido'),
@@ -202,14 +203,16 @@ const ConfirmOrder = () => {
           >
             Confirmar Compra
           </Button>
-          <Button
-            type="button"
-            variant="contained"
-            color="secondary"
-            onClick={handleGoBackToCart}
-          >
-            Regresar
-          </Button>
+      <Box position="absolute" top={10} left={10}>
+        <Button
+          type="button"
+          variant="contained"
+          color="secondary"
+          onClick={handleGoBackToCart}
+          startIcon={<ArrowBackIcon />}
+        >
+        </Button>
+      </Box>
         </Box>
       </Box>
       </Paper>

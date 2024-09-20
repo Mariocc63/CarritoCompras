@@ -165,7 +165,7 @@ exports.verOrdenes = async (req, res) => {
     try {
 
         const ordenes = await sequelize.query(
-            `select * from Ver_Ordenes_Confirmadas` ,
+            `select * from Ver_Ordenes` ,
             {
                 type: sequelize.QueryTypes.SELECT
             }

@@ -11,6 +11,7 @@ import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import ClearIcon from '@mui/icons-material/Clear';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const schema = yup.object().shape({
   categoria: yup.string().required("La categoría es requerida"),
@@ -281,9 +282,14 @@ const AddProduct = () => {
         </DialogActions>
       </Dialog>
 
-      <Box mt={2} display="flex" justifyContent="center">
-        <Button onClick={handleGoBack} variant="contained" color="secondary">
-          Regresar
+      <Box position="absolute" top={10} left={10}>
+        <Button
+          type="button"
+          variant="contained"
+          color="secondary"
+          onClick={handleGoBack}
+          startIcon={<ArrowBackIcon />}
+        >
         </Button>
       </Box>
 

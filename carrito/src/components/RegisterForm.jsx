@@ -5,6 +5,7 @@ import * as yup from 'yup';
 import { TextField, Button, Box, Typography, MenuItem, Select, InputLabel, FormControl, Paper, Container } from '@mui/material';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const schema = yup.object().shape({
   rol_idrol: yup.string().required('El rol es obligatorio'),
@@ -43,6 +44,10 @@ const RegisterForm = () => {
       setRegisterError('Error al registrar el usuario');
       console.error('Error:', error);
     }
+  };
+
+  const handleGoBack = () => {
+    navigate('/login');
   };
 
   return (
@@ -131,15 +136,16 @@ const RegisterForm = () => {
             <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
               Registrarse
             </Button>
-            <Button
-              variant="text"
-              color="secondary"
-              fullWidth
-              onClick={() => navigate('/login')}
-              sx={{ mt: 2 }}
-            >
-              Regresar
-            </Button>
+            <Box position="absolute" top={10} left={10}>
+              <Button
+                type="button"
+                variant="contained"
+                color="secondary"
+                onClick={handleGoBack}
+                startIcon={<ArrowBackIcon />}
+              >
+              </Button>
+            </Box>
           </Box>
         </Paper>
       </Container>

@@ -20,6 +20,7 @@ import {
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate, useParams } from 'react-router-dom';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const schema = yup.object().shape({
   nombre: yup.string().nullable(),
@@ -236,14 +237,14 @@ const EditCategory = () => {
         </Menu>
       </Paper>
 
-      <Box mt={2}>
+      <Box position="absolute" top={10} left={10}>
         <Button
           type="button"
           variant="contained"
           color="secondary"
           onClick={handleGoBack}
+          startIcon={<ArrowBackIcon />}
         >
-          Regresar
         </Button>
       </Box>
     </Box>

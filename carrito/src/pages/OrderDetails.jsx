@@ -8,6 +8,7 @@ import { Box, Typography, Button, Dialog, DialogActions, DialogContent, DialogTi
 import { AuthContext } from '../context/AuthContext';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import moment from 'moment';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const ORDER_STATES = {
     ENTREGADO: 8,
@@ -107,6 +108,8 @@ const OrderDetails = () => {
             <Typography>Correo Electrónico: {order.correo_electronico}</Typography>
             <Typography>Fecha de Entrega: {moment(order.fecha_entrega).format('DD/MM/YYYY')}</Typography>
             <Typography>Total: Q{order.total_orden.toFixed(2)}</Typography>
+            <Typography>Estado: {order.estado}</Typography>
+            {order.estado === "Rechazado" ? <Typography>Comentario: {order.comentarios}</Typography> : ""}
 
             <Typography variant="h6" gutterBottom>Detalles:</Typography>
             <List>
@@ -116,7 +119,8 @@ const OrderDetails = () => {
                 </ListItem>
               ))}
             </List>
-
+            
+            {order.estado === "Confirmado" ? 
             <Box display="flex" justifyContent="center" marginTop={2}>
               <Button
                 variant="contained"
@@ -134,6 +138,7 @@ const OrderDetails = () => {
                 Rechazar
               </Button>
             </Box>
+            : ""}
           </Box>
 
           <Dialog open={openConfirmDialog} onClose={() => setOpenConfirmDialog(false)}>
@@ -178,9 +183,14 @@ const OrderDetails = () => {
         <Typography>Cargando detalles de la orden...</Typography>
       )}
 
-      <Box marginTop={2}>
-        <Button onClick={handleGoBack} color="default" variant="outlined">
-          Regresar
+      <Box position="absolute" top={10} left={10}>
+        <Button
+          type="button"
+          variant="contained"
+          color="secondary"
+          onClick={handleGoBack}
+          startIcon={<ArrowBackIcon />}
+        >
         </Button>
       </Box>
 

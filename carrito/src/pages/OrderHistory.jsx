@@ -6,6 +6,7 @@ import moment from 'moment';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useNavigate } from 'react-router-dom';
 import { CartContext } from '../context/CartContext';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const OrderHistory = () => {
   const [orderHistory, setOrderHistory] = useState([]);
@@ -141,9 +142,14 @@ const OrderHistory = () => {
         <MenuItem onClick={CerrarSesion}>Cerrar Sesión</MenuItem>
       </Menu>
 
-      <Box textAlign="center" marginTop={4}>
-        <Button onClick={handleGoBack} color="secondary" variant="contained">
-          Regresar
+      <Box position="absolute" top={10} left={10}>
+        <Button
+          type="button"
+          variant="contained"
+          color="secondary"
+          onClick={handleGoBack}
+          startIcon={<ArrowBackIcon />}
+        >
         </Button>
       </Box>
     </Box>

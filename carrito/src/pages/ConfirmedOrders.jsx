@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Box, Typography, Button, Card, CardContent, IconButton, Menu, MenuItem, Divider, Container } from '@mui/material';
+import { Box, Typography, Button, Card, CardContent, IconButton, Menu, MenuItem, Divider, Container, Select, FormControl, InputLabel } from '@mui/material';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -12,6 +12,7 @@ const ConfirmedOrders = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [categoryAnchorEl, setCategoryAnchorEl] = useState(null);
   const [productAnchorEl, setProductAnchorEl] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState('all'); // Estado para controlar el filtro
   const navigate = useNavigate();
 
   const CerrarSesion = () => {
@@ -64,20 +65,50 @@ const ConfirmedOrders = () => {
     handleMenuClose();
   };
 
+  const handleStatusChange = (event) => {
+    setSelectedStatus(event.target.value);
+  };
+
+  const filterOrders = () => {
+    if (selectedStatus === 'all') {
+      return orders;
+    }
+    return orders.filter(order => order.estado === selectedStatus);
+  };
+
+  const filteredOrders = filterOrders();
+
   return (
     <Container maxWidth="lg">
       <Box padding={3}>
-      <Typography variant="h4" gutterBottom align="center">
+        <Typography variant="h4" gutterBottom align="center">
           Órdenes Confirmadas
         </Typography>
-        {orders.length > 0 ? (
-          orders.map(order => (
+
+        <FormControl fullWidth sx={{ mb: 3 }}>
+          <InputLabel id="status-select-label">Filtrar por Estado</InputLabel>
+          <Select
+            labelId="status-select-label"
+            value={selectedStatus}
+            label="Filtrar por Estado"
+            onChange={handleStatusChange}
+          >
+            <MenuItem value="all">Todas las Órdenes</MenuItem>
+            <MenuItem value="Confirmado">Confirmadas</MenuItem>
+            <MenuItem value="Rechazado">Rechazadas</MenuItem>
+            <MenuItem value="Entregado">Entregadas</MenuItem>
+          </Select>
+        </FormControl>
+
+        {filteredOrders.length > 0 ? (
+          filteredOrders.map(order => (
             <Card key={order.idorden} sx={{ marginBottom: 2, boxShadow: 3 }}>
               <CardContent>
                 <Typography variant="h6">Orden #{order.idorden}</Typography>
                 <Typography variant="body1">Nombre: {order.nombre}</Typography>
                 <Typography variant="body1">Fecha de Creación: {new Date(order.fecha_creacion).toLocaleDateString()}</Typography>
                 <Typography variant="body1">Total: Q{order.total_orden.toFixed(2)}</Typography>
+                <Typography variant="body1">Estado: {order.estado}</Typography>
                 <Box mt={2}>
                   <Link to={`/order-details/${order.idorden}`}>
                     <Button variant="contained" color="primary">
@@ -89,7 +120,7 @@ const ConfirmedOrders = () => {
             </Card>
           ))
         ) : (
-          <Typography variant="body1">No hay órdenes confirmadas.</Typography>
+          <Typography variant="body1">No hay órdenes en este estado.</Typography>
         )}
       </Box>
 
@@ -102,7 +133,6 @@ const ConfirmedOrders = () => {
         <MoreVertIcon />
       </IconButton>
 
-      {/* Menú Principal */}
       <Menu
         id="simple-menu"
         anchorEl={anchorEl}
