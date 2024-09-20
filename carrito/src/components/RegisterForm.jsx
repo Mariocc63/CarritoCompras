@@ -11,8 +11,8 @@ const schema = yup.object().shape({
   nombre_completo: yup.string().required('El nombre es obligatorio'),
   correo_electronico: yup.string().email('Correo inválido').required('El correo es obligatorio'),
   contrasenia: yup.string().min(6, 'La contraseña debe tener al menos 6 caracteres').required('La contraseña es obligatoria'),
-  telefono: yup.string().matches(/^[0-9]+$/, 'Debe ser un número válido').required('El teléfono es obligatorio'),
-  fecha_nacimiento: yup.date().required('La fecha de nacimiento es obligatoria'),
+  telefono: yup.string().matches(/^[0-9]+$/, 'Debe ser un número válido').required('El teléfono es obligatorio').length(8, "El telefono debe tener 8 caracteres"),
+  fecha_nacimiento: yup.date().max(new Date(), 'La fecha de de nacimiento no puede ser posterior a la fecha actual').required('La fecha de nacimiento es obligatoria'),
 });
 
 const RegisterForm = () => {

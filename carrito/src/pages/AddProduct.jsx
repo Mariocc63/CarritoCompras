@@ -267,7 +267,7 @@ const AddProduct = () => {
             <Typography variant="body2">Marca: {shippingData.marca}</Typography>
             <Typography variant="body2">Código: {shippingData.codigo}</Typography>
             <Typography variant="body2">Stock: {shippingData.stock}</Typography>
-            <Typography variant="body2">Precio: Q{shippingData.precio.toFixed(2)}</Typography>
+            <Typography variant="body2">Precio: Q{parseFloat(shippingData.precio).toFixed(2)}</Typography>
             <Typography variant="body2">Foto: {shippingData.foto}</Typography>
           </Box>
         </DialogContent>

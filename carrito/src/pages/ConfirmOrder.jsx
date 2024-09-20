@@ -15,6 +15,7 @@ const validationSchema = yup.object().shape({
   nombre_completo: yup.string().required('Nombre completo es requerido'),
   direccion: yup.string().required('Dirección es requerida'),
   telefono: yup.string()
+    .length(8, "El telefono debe tener 8 caracteres")
     .required('Teléfono es requerido')
     .matches(/^\d+$/, 'Teléfono solo debe contener números'),
   correo_electronico: yup.string()
