@@ -7,7 +7,7 @@ import * as yup from 'yup';
 import {
   TextField, Button, Box, Typography, Dialog,
   DialogTitle, DialogContent, DialogActions, Menu, MenuItem,
-  IconButton, Paper, Container
+  IconButton, Paper, Container, Alert
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { AuthContext } from '../context/AuthContext';
@@ -22,6 +22,7 @@ const AddCategory = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [categoryName, setCategoryName] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
+  const [ error, setError] = useState(null);
   const navigate = useNavigate();
 
   const { control, handleSubmit, formState: { errors }, reset } = useForm({
@@ -49,8 +50,7 @@ const AddCategory = () => {
       alert('Categoría creada con éxito');
       navigate('/confirmed-orders');
     } catch (error) {
-      alert("Error al crear la categoria");
-      console.error('Error al crear la categoría:', error);
+      setError('Error al actualiza la categoria');
     } finally {
       setDialogOpen(false);
       reset();
@@ -109,6 +109,11 @@ const AddCategory = () => {
               Insertar Categoría
             </Button>
           </Box>
+          {error && (
+          <Alert severity="error" onClose={() => setError('')}>
+            {error}
+          </Alert>
+        )}
         </form>
       </Paper>
 

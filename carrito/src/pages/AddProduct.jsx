@@ -5,7 +5,7 @@ import * as yup from 'yup';
 import axios from 'axios';
 import {
   TextField, Button, Dialog, DialogActions, DialogContent, DialogContentText,
-  DialogTitle, InputLabel, Select, MenuItem, Menu, FormControl, Typography, IconButton, Box, Paper
+  DialogTitle, InputLabel, Select, MenuItem, Menu, FormControl, Typography, IconButton, Box, Paper, Alert
 } from '@mui/material';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -36,7 +36,7 @@ const schema = yup.object().shape({
     .typeError('Ingrese un número válido')
     .min(0, 'El precio debe ser un número positivo')
     .required("El precio es requerido"),
-  foto: yup.mixed().required('La foto es requerida')
+  foto: yup.mixed().required('La foto es requerida'),
 });
 
 const AddProduct = () => {
@@ -48,9 +48,10 @@ const AddProduct = () => {
   const { auth, logoutUser } = useContext(AuthContext);
   const fileInputRef = useRef(null);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
   
-  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm({
+  const { register, handleSubmit, reset, setValue, formState: { errors }, trigger } = useForm({
     resolver: yupResolver(schema)
   });
 
@@ -89,6 +90,7 @@ const AddProduct = () => {
     }
 
     setValue("foto", selectedFile);
+    trigger('foto');
   };
 
   const handleRemoveFile = () => {
@@ -124,8 +126,8 @@ const AddProduct = () => {
       alert("Producto ingresado con éxito");
       navigate("/viewproducts");
     } catch (error) {
-      alert("Error al crear el producto");
-      console.error('Error al ingresar el producto', error);
+      
+      setError('Error al crear el producto');
     }
   };
 
@@ -166,6 +168,7 @@ const AddProduct = () => {
                 
                 setValue("categoria", selectedCategoryId);
                 setSelectedCategoryName(selectedCategory ? selectedCategory.categoria : '');
+                trigger('categoria');
               }}
             >
               {categorias.map(categoria => (
@@ -175,6 +178,7 @@ const AddProduct = () => {
               ))}
             </Select>
             {errors.categoria && <Typography color="error">{errors.categoria.message}</Typography>}
+            
           </FormControl>
 
           <TextField
@@ -216,7 +220,7 @@ const AddProduct = () => {
 
           <TextField
             {...register("precio")}
-            label="Precio"
+            label="Q Precio"
             type="number"
             fullWidth
             error={!!errors.precio}
@@ -236,6 +240,8 @@ const AddProduct = () => {
                 />
               </Button>
 
+              {errors.foto && <Typography color="error">{errors.foto.message}</Typography>}
+
           {selectedFile && (
             <Box mt={2} display="flex" alignItems="center" justifyContent="center">
               <Typography variant="body2" sx={{ marginRight: 1 }}>{imageName}</Typography>
@@ -253,6 +259,11 @@ const AddProduct = () => {
               Registrar
             </Button>
           </Box>
+          {error && (
+          <Alert severity="error" onClose={() => setError('')}>
+            {error}
+          </Alert>
+          )}
         </form>
       </Paper>
 

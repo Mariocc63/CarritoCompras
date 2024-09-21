@@ -15,7 +15,8 @@ import {
   IconButton,
   Menu,
   Box,
-  Paper
+  Paper,
+  Alert
 } from '@mui/material';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -36,6 +37,7 @@ const EditCategory = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const { idcategoria } = useParams();
   const { auth, logoutUser } = useContext(AuthContext);
+  const [ error, setError] = useState(null);
   const navigate = useNavigate();
 
   const { control, handleSubmit, formState: { errors }, watch } = useForm({
@@ -46,6 +48,11 @@ const EditCategory = () => {
     }
   });
 
+  const ESTADOS = {
+    ACTIVO: 3,
+    INACTIVO: 4
+  }
+
   useEffect(() => {
     const fetchCategory = async () => {
       try {
@@ -54,7 +61,7 @@ const EditCategory = () => {
         });
         const { categoria, estado } = response.data.categoriaproducto[0];
         setCategoryName(categoria);
-        setCurrentState(estado === 3 ? 'Activo' : 'Inactivo');
+        setCurrentState(estado === ESTADOS.ACTIVO ? 'Activo' : 'Inactivo');
       } catch (error) {
         console.error('Error al seleccionar la categoria', error);
       }
@@ -77,7 +84,7 @@ const EditCategory = () => {
 
   const onSubmit = (data) => {
     if (productosActivos && data.estado === 'Inactivo') {
-      alert('No puedes desactivar la categoría, hay productos activos.');
+      setError('No puedes desactivar la categoría, hay productos activos');
       return;
     }
     setDialogOpen(true);
@@ -86,7 +93,7 @@ const EditCategory = () => {
   const confirmarCambios = async (formData) => {
     const payload = {};
     if (formData.nombre !== categoryName && formData.nombre.trim() !== '') payload.nombre = formData.nombre;
-    if (formData.estado !== currentState && formData.estado.trim() !== '') payload.estados_idestados = formData.estado === 'Activo' ? 3 : 4;
+    if (formData.estado !== currentState && formData.estado.trim() !== '') payload.estados_idestados = formData.estado === 'Activo' ? ESTADOS.ACTIVO : ESTADOS.INACTIVO;
 
     try {
       await axios.put(`http://localhost:5000/api/categoriaproductos/${idcategoria}`, payload, {
@@ -96,7 +103,7 @@ const EditCategory = () => {
       alert('Categoría actualizada correctamente');
       navigate('/viewcategories');
     } catch (error) {
-      alert('Error actualizando categoría:', error);
+      setError('Error al actualiza la categoria');
     }
   };
 
@@ -191,6 +198,12 @@ const EditCategory = () => {
               Guardar
             </Button>
           </Box>
+
+          {error && (
+          <Alert severity="error" onClose={() => setError('')}>
+            {error}
+          </Alert>
+        )}
         </form>
 
         <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>

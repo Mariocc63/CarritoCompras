@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import {
-  Box, Button, TextField, MenuItem, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography, FormControl, InputLabel, Select, IconButton, Menu
+  Box, Button, TextField, MenuItem, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography, FormControl, InputLabel, Select, IconButton, Menu, Alert
 } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import axios from 'axios';
@@ -47,6 +47,13 @@ const EditProduct = () => {
   const [imageName, setImageName] = useState('');
   const fileInputRef = useRef(null);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [ error, setError] = useState(null);
+
+
+  const ESTADOS = {
+    ACTIVO: 5,
+    INACTIVO: 6
+  }
 
   const {
     register,
@@ -117,7 +124,7 @@ const EditProduct = () => {
     if(data.codigo) formData.append('codigo', data.codigo);
     if(data.stock) formData.append('stock', data.stock);
     if(data.precio) formData.append('precio', data.precio);
-    if(data.estado) formData.append('estados_idestados', data.estado === 'Activo' ? 5 : 6);
+    if(data.estado) formData.append('estados_idestados', data.estado === 'Activo' ? ESTADOS.ACTIVO : ESTADOS.INACTIVO);
     if (file) formData.append('foto', file);
 
     try {
@@ -130,9 +137,7 @@ const EditProduct = () => {
       alert('Producto actualizado con éxito');
       navigate('/viewproducts');
     } catch (error) {
-      alert("Error al actualizar el producto");
-      console.error('Error al actualizar el producto:', error);
-      alert('Error al actualizar el producto');
+      setError('Error al actualizar el producto');
     }
   };
 
@@ -187,7 +192,7 @@ const EditProduct = () => {
             <Typography>Codigo: {product.codigo}</Typography>
             <Typography>Stock: {product.producto}</Typography>
             <Typography>Precio: Q{parseFloat(product.precio).toFixed(2)}</Typography>
-            <Typography>Estado: {product.estado === 5 ? "Activo" : "Inactivo"}</Typography>
+            <Typography>Estado: {product.estado === ESTADOS.ACTIVO ? "Activo" : "Inactivo"}</Typography>
           </Box>
           
 
@@ -232,7 +237,7 @@ const EditProduct = () => {
               sx={{ mb: 2 }}
             />
             <TextField
-              label="Precio"
+              label="Q Precio"
               type="number"
               InputProps={{ inputProps: { step: 0.01 } }}
               fullWidth
@@ -252,8 +257,8 @@ const EditProduct = () => {
                 error={!!errors.estado}
               >
                 <MenuItem value="">Seleccionar Estado</MenuItem>
-                {product.estado === 5 && <MenuItem value="Inactivo">Inactivo</MenuItem>}
-                {product.estado === 6 && <MenuItem value="Activo">Activo</MenuItem>}
+                {product.estado === ESTADOS.ACTIVO && <MenuItem value="Inactivo">Inactivo</MenuItem>}
+                {product.estado === ESTADOS.INACTIVO && <MenuItem value="Activo">Activo</MenuItem>}
               </Select>
             </FormControl>
 
@@ -280,6 +285,11 @@ const EditProduct = () => {
                 Confirmar
               </Button>
             </Box>
+            {error && (
+              <Alert severity="error" onClose={() => setError('')}>
+                {error}
+              </Alert>
+        )}
           </form>
         </Box>
       )}

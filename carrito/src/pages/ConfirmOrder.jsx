@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import axios from 'axios';
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Menu, MenuItem, IconButton, Paper } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Menu, MenuItem, IconButton, Paper, Alert } from '@mui/material';
 import { AuthContext } from '../context/AuthContext';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import moment from 'moment';
@@ -18,11 +18,11 @@ const validationSchema = yup.object().shape({
   telefono: yup.string()
     .length(8, "El telefono debe tener 8 caracteres")
     .required('Teléfono es requerido')
-    .matches(/^\d+$/, 'Teléfono solo debe contener números'),
+    .matches(/^[0-9]+$/, 'Teléfono solo debe contener números'),
   correo_electronico: yup.string()
     .email('Correo electrónico inválido')
     .required('Correo electrónico es requerido'),
-  fecha_entrega: yup.date().required('Fecha de entrega es requerida').min(new Date(), 'La fecha de entrega debe ser hoy o una fecha futura'),
+  fecha_entrega: yup.date().required('Fecha de entrega es requerida').min(new Date(), 'La fecha de entrega debe ser hoy o una fecha futura').typeError("La fecha de entrega debe ser válida"),
 });
 
 const ConfirmOrder = () => {
@@ -30,6 +30,7 @@ const ConfirmOrder = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const { auth, logoutUser } = useContext(AuthContext);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [ error, setError] = useState(null);
   const navigate = useNavigate();
 
   const [shippingData, setShippingData] = useState({
@@ -99,8 +100,7 @@ const ConfirmOrder = () => {
       navigate('/products');
       clearCart();
     } catch (error) {
-      alert("Error al registrar la compra");
-      console.error('Error al confirmar la compra:', error);
+      setError('Error al registrar la compra');
     }
   };
 
@@ -215,6 +215,11 @@ const ConfirmOrder = () => {
         </Button>
       </Box>
         </Box>
+        {error && (
+          <Alert severity="error" onClose={() => setError('')}>
+            {error}
+          </Alert>
+        )}
       </Box>
       </Paper>
 

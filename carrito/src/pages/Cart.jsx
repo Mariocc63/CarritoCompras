@@ -41,7 +41,7 @@ const Cart = () => {
 
   return (
     <Box p={3} sx={{ maxWidth: 800, margin: 'auto' }}>
-      <Typography variant="h1" align="center">
+      <Typography variant="h4" align="center">
         Carrito de Compras
       </Typography>
       {isCartEmpty ? (

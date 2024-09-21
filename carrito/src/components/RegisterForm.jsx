@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { TextField, Button, Box, Typography, MenuItem, Select, InputLabel, FormControl, Paper, Container } from '@mui/material';
+import { TextField, Button, Box, Typography, MenuItem, Select, InputLabel, FormControl, Paper, Container, Alert } from '@mui/material';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -12,8 +12,11 @@ const schema = yup.object().shape({
   nombre_completo: yup.string().required('El nombre es obligatorio'),
   correo_electronico: yup.string().email('Correo inválido').required('El correo es obligatorio'),
   contrasenia: yup.string().min(6, 'La contraseña debe tener al menos 6 caracteres').required('La contraseña es obligatoria'),
-  telefono: yup.string().matches(/^[0-9]+$/, 'Debe ser un número válido').required('El teléfono es obligatorio').length(8, "El telefono debe tener 8 caracteres"),
-  fecha_nacimiento: yup.date().max(new Date(), 'La fecha de de nacimiento no puede ser posterior a la fecha actual').required('La fecha de nacimiento es obligatoria'),
+  telefono: yup.string()
+    .length(8, "El telefono debe tener 8 caracteres")
+    .required('Teléfono es requerido')
+    .matches(/^[0-9]+$/, 'Teléfono solo debe contener números'),
+  fecha_nacimiento: yup.date().max(new Date(), 'La fecha de de nacimiento no puede ser posterior a la fecha actual').required('La fecha de nacimiento es obligatoria').typeError("La fecha de nacimiento debe ser válida"),
 });
 
 const RegisterForm = () => {
@@ -40,9 +43,7 @@ const RegisterForm = () => {
       alert('Usuario registrado con éxito');
       navigate("/login");
     } catch (error) {
-      alert("Error al registrarse");
-      setRegisterError('Error al registrar el usuario');
-      console.error('Error:', error);
+      setRegisterError('Ocurrió un error al registrar el usuario');
     }
   };
 
@@ -58,17 +59,17 @@ const RegisterForm = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#f0f4f8',
+        flexDirection: 'column',
         padding: '20px',
         boxSizing: 'border-box',
       }}
     >
-      <Container maxWidth="xs">
-        <Paper elevation={6} sx={{ padding: '30px', borderRadius: '15px', backgroundColor: 'rgba(255, 255, 255, 0.9)' }}>
-          <Typography variant="h5" align="center" gutterBottom>
-            Registro de Usuario
-          </Typography>
+      <Typography variant="h4" align="center">
+        Registro de Usuario
+      </Typography>
 
+      <Container maxWidth="xs">
+        <Paper elevation={6} sx={{ padding: '30px', borderRadius: '15px'}}>
           <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
             <FormControl fullWidth margin="normal">
               <InputLabel>Rol</InputLabel>
@@ -128,9 +129,9 @@ const RegisterForm = () => {
             />
 
             {registerError && (
-              <Typography color="error" variant="body2" align="center">
+              <Alert severity="error" onClose={() => setRegisterError('')}>
                 {registerError}
-              </Typography>
+              </Alert>
             )}
 
             <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>

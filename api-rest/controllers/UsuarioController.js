@@ -25,7 +25,7 @@ exports.crearUsuario= async (req,res) => {
         )
         
         if(usuario.length > 0) {
-            res.status(400).json({message: "El usuario a insertar ya existe"});
+            return res.status(500).json({message: "El usuario a insertar ya existe"});
         } 
         else {
             try {
@@ -52,10 +52,10 @@ exports.crearUsuario= async (req,res) => {
                         type: sequelize.QueryTypes.INSERT
                     }
                 );
-                res.status(201).json({message: "Usuario agregado correctamente"});
+               return res.status(201).json({message: "Usuario agregado correctamente"});
             } 
             catch (error) {
-                res.status(400).json({message: "Error al crear el usuario"});
+                return res.status(400).json({message: "Error al crear el usuario"});
                 console.log(error);
             }
         }

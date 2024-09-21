@@ -21,7 +21,6 @@ const LoginForm = () => {
   const [loginError, setLoginError] = useState("");
   const navigate = useNavigate();
 
-
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(loginSchema), 
   });
@@ -52,16 +51,20 @@ const LoginForm = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#f5f5f5',
         padding: '20px'
       }}
     >
       <Container maxWidth="xs">
-        <Paper elevation={6} sx={{ padding: '30px', borderRadius: '15px', backgroundColor: 'rgba(255, 255, 255, 0.9)' }}>
-          <Typography variant="h5" align="center" gutterBottom>
+        
+        {/* Título centrado arriba, fuera del Paper */}
+        <Box textAlign="center" mb={3}>
+          <Typography variant="h4">
             Iniciar Sesión
           </Typography>
+        </Box>
 
+        {/* Paper para el formulario */}
+        <Paper elevation={6} sx={{ padding: '30px', borderRadius: '15px'}}>
           <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
             <TextField
               fullWidth
