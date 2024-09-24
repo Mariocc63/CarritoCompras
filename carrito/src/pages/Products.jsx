@@ -1,20 +1,18 @@
-import React, { useContext, useEffect } from 'react';
-import { AuthContext } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import ProductList from '../components/ProductList';
-import { Box, Button} from '@mui/material';
+import React, { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
+import ProductList from "../components/ProductList";
+import { Box } from "@mui/material";
 
 const Products = () => {
-  const { auth, logoutUser } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const { auth } = useContext(AuthContext);
 
-
-  return ( <>
-    <Box sx={{ p: 2 }}>
-    <ProductList token={auth.token} />
-    </Box>
-  </>
-  )
+  return (
+    <>
+      <Box sx={{ p: 2 }}>
+        <ProductList token={auth.token} />
+      </Box>
+    </>
+  );
 };
 
 export default Products;

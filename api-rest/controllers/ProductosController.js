@@ -3,43 +3,45 @@ const path = require("path");
 const fs = require("fs");
 const { query } = require("express");
 
+exports.crearProductos = async (req, res) => {
+  const {
+    categoriaproductos_idcategoriaproductos,
+    nombre,
+    marca,
+    codigo,
+    stock,
+    precio,
+  } = req.body;
 
-exports.crearProductos = async (req,res) => {
-    const { 
-        categoriaproductos_idcategoriaproductos, 
-        nombre,
-        marca,
+  const pcategoriaproductos_idcategoriaproductos = parseInt(
+    categoriaproductos_idcategoriaproductos
+  );
+  const pstock = parseInt(stock);
+  const pprecio = parseFloat(precio);
+
+  const existeproducto = await sequelize.query(
+    "select * from productos where codigo = :codigo",
+    {
+      replacements: {
         codigo,
-        stock,
-        precio} = req.body;
+      },
+      type: sequelize.QueryTypes.SELECT,
+    }
+  );
 
-        const pcategoriaproductos_idcategoriaproductos = parseInt(categoriaproductos_idcategoriaproductos);
-        const pstock = parseInt(stock);
-        const pprecio = parseFloat(precio);
+  if (existeproducto.length > 0) {
+    res.status(400).json({ message: "El producto a ingresar ya existe" });
+  } else {
+    if (!req.file) {
+      res.status(400).json({ message: "No se proporcionó una imagen" });
+    } else {
+      const filename = req.file.originalname;
+      const foto = path.join("images", filename);
 
-        const existeproducto = await sequelize.query("select * from productos where codigo = :codigo",
-            {
-                replacements: {
-                    codigo
-                },
-                type: sequelize.QueryTypes.SELECT
-            }
-        );
-    
-        if(existeproducto.length > 0) {
-            res.status(400).json({message: "El producto a ingresar ya existe"})
-        }
-        else {
-            if(!req.file) {
-                res.status(400).json({message: "No se proporcionó una imagen"});
-            }
-            else {
-                const filename = req.file.originalname;
-                const foto = path.join("images",filename);
-
-                try {
-                    const usuarios_idusuarios = req.datos.datos.idusuario;
-                    await sequelize.query(`
+      try {
+        const usuarios_idusuarios = req.datos.datos.idusuario;
+        await sequelize.query(
+          `
                         EXEC InsertarProductos
                         :categoriaproductos_idcategoriaproductos,
                         :usuarios_idusuarios,
@@ -48,47 +50,45 @@ exports.crearProductos = async (req,res) => {
                          :codigo,
                          :stock,
                          :precio,
-                         :foto` ,
-                        {
-                            replacements: { 
-                                categoriaproductos_idcategoriaproductos: 
-                                pcategoriaproductos_idcategoriaproductos, 
-                                usuarios_idusuarios,
-                                nombre,
-                                marca,
-                                codigo,
-                                stock: pstock,
-                                precio: pprecio,
-                                foto},
-                            type: sequelize.QueryTypes.INSERT
-                        }
-                    );
-                    res.status(200).json({message: "Producto agregado correctamente"});
-                } 
-                catch (error) {
-                    res.status(400).json({error: "Error al crear el producto"});
-                    console.log(error);
-                }
-            }
-            
-        }
-}
+                         :foto`,
+          {
+            replacements: {
+              categoriaproductos_idcategoriaproductos:
+                pcategoriaproductos_idcategoriaproductos,
+              usuarios_idusuarios,
+              nombre,
+              marca,
+              codigo,
+              stock: pstock,
+              precio: pprecio,
+              foto,
+            },
+            type: sequelize.QueryTypes.INSERT,
+          }
+        );
+        res.status(200).json({ message: "Producto agregado correctamente" });
+      } catch (error) {
+        res.status(400).json({ error: "Error al crear el producto" });
+        console.log(error);
+      }
+    }
+  }
+};
 
 //Actualizacion de Productos
 exports.actualizarProductos = async (req, res) => {
-    const { idproductos } = req.params;
-    const campos  = req.body;
-    const file = req.file;
+  const { idproductos } = req.params;
+  const campos = req.body;
+  const file = req.file;
 
-    if(!idproductos || Object.keys(campos).length === 0) {
-        if(file === undefined) {
-            return res.status(400).json({error: "No hay campos para actualizar"})
-        }
-        
+  if (!idproductos || Object.keys(campos).length === 0) {
+    if (file === undefined) {
+      return res.status(400).json({ error: "No hay campos para actualizar" });
     }
+  }
 
-    try {
-        const query1 = `EXEC ActualizarProductos @idproductos = :idproductos, 
+  try {
+    const query1 = `EXEC ActualizarProductos @idproductos = :idproductos, 
             @categoriaproductos_idcategoriaproductos = :categoriaproductos_idcategoriaproductos, 
             @usuarios_idusuarios = :usuarios_idusuarios,
             @nombre = :nombre,
@@ -99,211 +99,197 @@ exports.actualizarProductos = async (req, res) => {
             @precio = :precio,
             @fecha_creacion = :fecha_creacion`.toString();
 
-        if(!file) {
-            
-            await sequelize.query(query1,
-            {
-                replacements: { 
-                    idproductos,
-                    categoriaproductos_idcategoriaproductos: campos.categoriaproductos_idcategoriaproductos || null, 
-                    usuarios_idusuarios: campos.usuarios_idusuarios || null, 
-                    nombre: campos.nombre || null,
-                    marca: campos.marca || null, 
-                    codigo: campos.codigo || null,
-                    stock: campos.stock || null, 
-                    estados_idestados: campos.estados_idestados || null,
-                    precio: campos.precio || null,
-                    fecha_creacion: campos.fecha_creacion || null,
-                },
-                type: sequelize.QueryTypes.UPDATE
-            });
-             return res.status(200).json({message: "Actualizado correctamente"});
-            
-        }
+    if (!file) {
+      await sequelize.query(query1, {
+        replacements: {
+          idproductos,
+          categoriaproductos_idcategoriaproductos:
+            campos.categoriaproductos_idcategoriaproductos || null,
+          usuarios_idusuarios: campos.usuarios_idusuarios || null,
+          nombre: campos.nombre || null,
+          marca: campos.marca || null,
+          codigo: campos.codigo || null,
+          stock: campos.stock || null,
+          estados_idestados: campos.estados_idestados || null,
+          precio: campos.precio || null,
+          fecha_creacion: campos.fecha_creacion || null,
+        },
+        type: sequelize.QueryTypes.UPDATE,
+      });
+      return res.status(200).json({ message: "Actualizado correctamente" });
+    } else {
+      const nuevaImagen = file.originalname;
+      const nuevaruta = path.join("images", nuevaImagen);
 
-        
-        else {
-
-            const nuevaImagen = file.originalname;
-            const nuevaruta = path.join("images", nuevaImagen);
-
-            const [producto] = await sequelize.query(`Select foto 
+      const [producto] = await sequelize.query(
+        `Select foto 
                 from productos where idproductos = :idproductos`,
-            {
-                replacements: {
-                    idproductos
-                },
-                type: sequelize.QueryTypes.UPDATE
-            });
-
-            if(!producto) {
-                return res.status(404).json({message: "Producto no encontrado"});
-
-            }
-
-            if(producto.foto) {
-                const rutaImagenAntigua = path.join(__dirname, "..", "images", producto.foto)
-                
-                fs.unlink(rutaImagenAntigua, (error) => {
-                    if(error) {
-                        return res.status(400).json({message: "Error al actualizar la imagen"})
-                    }
-                });
-            }
-
-            await sequelize.query(query1 + ` , @foto = :foto`,
-            {
-                replacements: { 
-                    idproductos,
-                    categoriaproductos_idcategoriaproductos: campos.categoriaproductos_idcategoriaproductos || null, 
-                    usuarios_idusuarios: campos.usuarios_idusuarios || null, 
-                    nombre: campos.nombre || null,
-                    marca: campos.marca || null, 
-                    codigo: campos.codigo || null,
-                    stock: campos.stock || null, 
-                    estados_idestados: campos.estados_idestados || null,
-                    precio: campos.precio || null,
-                    fecha_creacion: campos.fecha_creacion || null,
-                    foto: nuevaruta || null
-                },
-                type: sequelize.QueryTypes.UPDATE
-            }
-        );
-            return res.status(200).json({message: "Actualizado correctamente"});
+        {
+          replacements: {
+            idproductos,
+          },
+          type: sequelize.QueryTypes.UPDATE,
         }
-        
+      );
+
+      if (!producto) {
+        return res.status(404).json({ message: "Producto no encontrado" });
+      }
+
+      if (producto.foto) {
+        const rutaImagenAntigua = path.join(
+          __dirname,
+          "..",
+          "images",
+          producto.foto
+        );
+
+        fs.unlink(rutaImagenAntigua, (error) => {
+          if (error) {
+            return res
+              .status(400)
+              .json({ message: "Error al actualizar la imagen" });
+          }
+        });
+      }
+
+      await sequelize.query(query1 + ` , @foto = :foto`, {
+        replacements: {
+          idproductos,
+          categoriaproductos_idcategoriaproductos:
+            campos.categoriaproductos_idcategoriaproductos || null,
+          usuarios_idusuarios: campos.usuarios_idusuarios || null,
+          nombre: campos.nombre || null,
+          marca: campos.marca || null,
+          codigo: campos.codigo || null,
+          stock: campos.stock || null,
+          estados_idestados: campos.estados_idestados || null,
+          precio: campos.precio || null,
+          fecha_creacion: campos.fecha_creacion || null,
+          foto: nuevaruta || null,
+        },
+        type: sequelize.QueryTypes.UPDATE,
+      });
+      return res.status(200).json({ message: "Actualizado correctamente" });
     }
-    catch (error) {
-        console.error("Error al actualizar el producto", error)
-        return res.status(500).json({message: "Error al actualizar el producto"});
-    }
-    
+  } catch (error) {
+    console.error("Error al actualizar el producto", error);
+    return res.status(500).json({ message: "Error al actualizar el producto" });
+  }
 };
 
 exports.verProductosActivos = async (req, res) => {
-    try {
-        const productos = await sequelize.query(
-            `select * from Ver_Productos_Activos`, 
-            {  type: sequelize.QueryTypes.SELECT }
-            )
-            res.status(200).json({productos})  
-        }
-        
-    catch (error) {
-        res.status(408).json({message: "Error al cargar los productos"});
-    }
-}
+  try {
+    const productos = await sequelize.query(
+      `select * from Ver_Productos_Activos`,
+      { type: sequelize.QueryTypes.SELECT }
+    );
+    res.status(200).json({ productos });
+  } catch (error) {
+    res.status(408).json({ message: "Error al cargar los productos" });
+  }
+};
 
 exports.verProductosCompletos = async (req, res) => {
-    try {
-        const productos = await sequelize.query(
-            `select * from Ver_Productos_Completos`, 
-            {  type: sequelize.QueryTypes.SELECT }
-            )
-            return res.status(200).json({productos})  
-        }
-        
-    catch (error) {
-       return res.status(408).json({message: "Error al cargar los productos"});
-    }
-}
+  try {
+    const productos = await sequelize.query(
+      `select * from Ver_Productos_Completos`,
+      { type: sequelize.QueryTypes.SELECT }
+    );
+    return res.status(200).json({ productos });
+  } catch (error) {
+    return res.status(408).json({ message: "Error al cargar los productos" });
+  }
+};
 
 exports.verProductoIndividual = async (req, res) => {
-    const {idproductos} = req.params;
+  const { idproductos } = req.params;
 
-    try {
-        const producto = await sequelize.query(
-            `EXEC Ver_Producto_Individual
-            @idproductos = :idproductos`, 
-            {
-                replacements: {
-                    idproductos
-                }
-            },
-            {  type: sequelize.QueryTypes.SELECT }
-            )
-            return res.status(200).json({producto})  
-        }
-        
-    catch (error) {
-       return res.status(408).json({message: "Error al cargar el producto"});
-    }
-}
-
+  try {
+    const producto = await sequelize.query(
+      `EXEC Ver_Producto_Individual
+            @idproductos = :idproductos`,
+      {
+        replacements: {
+          idproductos,
+        },
+      },
+      { type: sequelize.QueryTypes.SELECT }
+    );
+    return res.status(200).json({ producto });
+  } catch (error) {
+    return res.status(408).json({ message: "Error al cargar el producto" });
+  }
+};
 
 exports.VerProductosPorCategoria = async (req, res) => {
-    const { categoriaproductos_idcategoriaproductos } = req.params;
+  const { categoriaproductos_idcategoriaproductos } = req.params;
 
-    try {
-        
-          const productos =  await sequelize.query(
-                `EXEC Ver_Productos_por_categoria
+  try {
+    const productos = await sequelize.query(
+      `EXEC Ver_Productos_por_categoria
                 @categoriaproductos_idcategoriaproductos = :categoriaproductos_idcategoriaproductos`,
-            {
-                replacements: { 
-                    categoriaproductos_idcategoriaproductos
-                },
-                type: sequelize.QueryTypes.SELECT
-            }
-        );
-        res.status(200).json({productos});
-        
-        
-    }
-    catch (error) {
-        res.status(500).json({message: "Error al ver los productos"});
-    }
-    
+      {
+        replacements: {
+          categoriaproductos_idcategoriaproductos,
+        },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+    res.status(200).json({ productos });
+  } catch (error) {
+    res.status(500).json({ message: "Error al ver los productos" });
+  }
 };
 
 //Activar productos cuando la categoria se habilita
 exports.ActivarProductos = async (req, res) => {
-    const { idcategoria } = req.params;
+  const { idcategoria } = req.params;
 
-    try {
-        
-          await sequelize.query(
-                `EXEC ActivarProductos
+  try {
+    await sequelize.query(
+      `EXEC ActivarProductos
                 @categoriaproductos_idcategoriaproductos = :idcategoria`,
-            {
-                replacements: { 
-                    idcategoria
-                },
-                type: sequelize.QueryTypes.UPDATE
-            }
-        );
-       return res.status(200).json({message: "Productos de la categoria activados correctamente"});
-        
-        
-    }
-    catch (error) {
-        return res.status(500).json({message: "Error al activar los productos de la categoria"});
-    }
-    
+      {
+        replacements: {
+          idcategoria,
+        },
+        type: sequelize.QueryTypes.UPDATE,
+      }
+    );
+    return res
+      .status(200)
+      .json({ message: "Productos de la categoria activados correctamente" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error al activar los productos de la categoria" });
+  }
 };
 
 //Desactivar productos cuando la categoria se inhabilita
 exports.DesactivarProductos = async (req, res) => {
-    const { idcategoria } = req.params;
+  const { idcategoria } = req.params;
 
-    try {
-        
-          await sequelize.query(
-                `EXEC DesactivarProductos
+  try {
+    await sequelize.query(
+      `EXEC DesactivarProductos
                 @categoriaproductos_idcategoriaproductos = :idcategoria`,
-            {
-                replacements: { 
-                    idcategoria
-                },
-                type: sequelize.QueryTypes.UPDATE
-            }
-        );
-       return res.status(200).json({message: "Productos de la categoria desactivados correctamente"});
-        
-        
-    }
-    catch (error) {
-        return res.status(500).json({message: "Error al desactivar los productos de la categoria"});
-    }
-    
+      {
+        replacements: {
+          idcategoria,
+        },
+        type: sequelize.QueryTypes.UPDATE,
+      }
+    );
+    return res
+      .status(200)
+      .json({
+        message: "Productos de la categoria desactivados correctamente",
+      });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error al desactivar los productos de la categoria" });
+  }
 };

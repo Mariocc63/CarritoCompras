@@ -1,16 +1,16 @@
-import React from 'react';
-import { Button, Typography, Box } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { Button, Typography, Box } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const AccessDenied = () => {
   const navigate = useNavigate();
 
   return (
-    <Box 
-      display="flex" 
-      flexDirection="column" 
-      alignItems="center" 
-      justifyContent="center" 
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      justifyContent="center"
       height="100vh"
     >
       <Typography variant="h4" color="error" gutterBottom>
@@ -19,10 +19,10 @@ const AccessDenied = () => {
       <Typography variant="body1" gutterBottom>
         No tienes permiso para acceder a esta página.
       </Typography>
-      <Button 
-        variant="contained" 
-        color="primary" 
-        onClick={() => navigate('/login')} 
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => navigate("/login")}
         sx={{ mt: 2 }}
       >
         Volver al Inicio de Sesión

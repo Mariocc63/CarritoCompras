@@ -1,34 +1,46 @@
-import React, { useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { useForm, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import React, { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import {
-  TextField, Button, Box, Typography, Dialog,
-  DialogTitle, DialogContent, DialogActions, Menu, MenuItem,
-  IconButton, Paper, Container, Alert
-} from '@mui/material';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { AuthContext } from '../context/AuthContext';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+  TextField,
+  Button,
+  Box,
+  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Paper,
+  Container,
+  Alert,
+} from "@mui/material";
+import { AuthContext } from "../context/AuthContext";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Options from "../components/Options";
 
 const schema = yup.object().shape({
-  nombre: yup.string().required('El nombre es obligatorio'),
+  nombre: yup.string().required("El nombre es obligatorio"),
 });
 
 const AddCategory = () => {
-  const { auth, logoutUser } = useContext(AuthContext);
+  const { auth } = useContext(AuthContext);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [categoryName, setCategoryName] = useState('');
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [ error, setError] = useState(null);
+  const [categoryName, setCategoryName] = useState("");
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const { control, handleSubmit, formState: { errors }, reset } = useForm({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      nombre: '',
+      nombre: "",
     },
   });
 
@@ -39,7 +51,8 @@ const AddCategory = () => {
 
   const handleConfirm = async () => {
     try {
-      await axios.post('http://localhost:5000/api/categoriaproductos',
+      await axios.post(
+        "http://localhost:5000/api/categoriaproductos",
         {
           nombre: categoryName,
         },
@@ -47,10 +60,10 @@ const AddCategory = () => {
           headers: { Authorization: `Bearer ${auth.token}` },
         }
       );
-      alert('Categoría creada con éxito');
-      navigate('/confirmed-orders');
+      alert("Categoría creada con éxito");
+      navigate("/confirmed-orders");
     } catch (error) {
-      setError('Error al actualiza la categoria');
+      setError("Error al actualiza la categoria");
     } finally {
       setDialogOpen(false);
       reset();
@@ -61,21 +74,8 @@ const AddCategory = () => {
     setDialogOpen(false);
   };
 
-  const CerrarSesion = () => {
-    logoutUser();
-    navigate("/login");
-  }
-
   const handleGoBack = () => {
-    navigate('/confirmed-orders');
-  };
-
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
+    navigate("/confirmed-orders");
   };
 
   return (
@@ -83,8 +83,16 @@ const AddCategory = () => {
       <Typography variant="h4" align="center" gutterBottom>
         Agregar Categoría
       </Typography>
-      <Paper elevation={3} sx={{ padding: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <form onSubmit={handleSubmit(onSubmit)} style={{ width: '100%' }}>
+      <Paper
+        elevation={3}
+        sx={{
+          padding: 3,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
           <Controller
             name="nombre"
             control={control}
@@ -101,19 +109,15 @@ const AddCategory = () => {
             )}
           />
           <Box mt={2} display="flex" justifyContent="center">
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-            >
-              Insertar Categoría
+            <Button type="submit" variant="contained" color="primary">
+              Registrar
             </Button>
           </Box>
           {error && (
-          <Alert severity="error" onClose={() => setError('')}>
-            {error}
-          </Alert>
-        )}
+            <Alert severity="error" onClose={() => setError("")}>
+              {error}
+            </Alert>
+          )}
         </form>
       </Paper>
 
@@ -130,7 +134,6 @@ const AddCategory = () => {
           </Typography>
         </DialogContent>
         <DialogActions>
-          
           <Button onClick={handleClose} color="secondary">
             Cancelar
           </Button>
@@ -140,31 +143,7 @@ const AddCategory = () => {
         </DialogActions>
       </Dialog>
 
-      <IconButton
-        aria-controls="simple-menu"
-        aria-haspopup="true"
-        onClick={handleMenuOpen}
-        style={{ position: 'absolute', top: 10, right: 10 }}
-      >
-        <MoreVertIcon />
-      </IconButton>
-
-      <Menu
-        id="simple-menu"
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-      >
-        <MenuItem onClick={CerrarSesion}>Cerrar Sesión</MenuItem>
-      </Menu>
+      <Options></Options>
 
       <Box position="absolute" top={10} left={10}>
         <Button
@@ -173,8 +152,7 @@ const AddCategory = () => {
           color="secondary"
           onClick={handleGoBack}
           startIcon={<ArrowBackIcon />}
-        >
-        </Button>
+        ></Button>
       </Box>
     </Container>
   );

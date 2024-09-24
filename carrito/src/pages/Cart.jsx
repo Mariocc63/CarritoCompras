@@ -1,18 +1,32 @@
-import React, { useContext, useState } from 'react';
-import { CartContext } from '../context/CartContext';
-import { Box, Typography, Button, IconButton, Grid, Menu, MenuItem, Card, CardContent, CardActions, Divider, Paper, Avatar } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import RemoveIcon from '@mui/icons-material/Remove';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { AuthContext } from '../context/AuthContext';
+import React, { useContext } from "react";
+import { CartContext } from "../context/CartContext";
+import {
+  Box,
+  Typography,
+  Button,
+  IconButton,
+  Grid,
+  Card,
+  CardActions,
+  Divider,
+  Paper,
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import RemoveIcon from "@mui/icons-material/Remove";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Options from "../components/Options";
 
 const Cart = () => {
-  const { cart, subtotal, addToCart, decreaseQuantity, removeFromCart, clearCart } = useContext(CartContext);
-  const {auth, logoutUser} = useContext(AuthContext);
-  const [anchorEl, setAnchorEl] = useState(null);
+  const {
+    cart,
+    subtotal,
+    addToCart,
+    decreaseQuantity,
+    removeFromCart,
+    clearCart,
+  } = useContext(CartContext);
   const navigate = useNavigate();
 
   const handleConfirmPurchase = () => {
@@ -21,31 +35,17 @@ const Cart = () => {
 
   const isCartEmpty = cart.length === 0;
 
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const CerrarSesion = () => {
-    logoutUser();
-    navigate("/login");
-    clearCart();
-  };
-
   const handleGoBack = () => {
-    navigate('/products');
+    navigate("/products");
   };
 
   return (
-    <Box p={3} sx={{ maxWidth: 800, margin: 'auto' }}>
+    <Box p={3} sx={{ maxWidth: 800, margin: "auto" }}>
       <Typography variant="h4" align="center">
         Carrito de Compras
       </Typography>
       {isCartEmpty ? (
-        <Paper elevation={2} sx={{ padding: 2, textAlign: 'center' }}>
+        <Paper elevation={2} sx={{ padding: 2, textAlign: "center" }}>
           <Typography variant="body1">El carrito está vacío.</Typography>
         </Paper>
       ) : (
@@ -53,22 +53,41 @@ const Cart = () => {
           <Grid container spacing={2} justifyContent="center">
             {cart.map((item, index) => (
               <Grid item xs={12} key={index}>
-                <Card sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 2 }}>
+                <Card
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    padding: 2,
+                  }}
+                >
                   <Box display="flex" alignItems="center">
-                    {/* <Avatar src={item.producto.imagen} sx={{ width: 56, height: 56, mr: 2 }} /> */}
-                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>{item.producto.producto}</Typography>
+                    <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+                      {item.producto.producto}
+                    </Typography>
                   </Box>
                   <Typography variant="body1">
-                    Q{item.producto.precio.toFixed(2)} x {item.cantidad} = Q{(item.producto.precio * item.cantidad).toFixed(2)}
+                    Q{item.producto.precio.toFixed(2)} x {item.cantidad} = Q
+                    {(item.producto.precio * item.cantidad).toFixed(2)}
                   </Typography>
                   <CardActions>
-                    <IconButton color="primary" onClick={() => addToCart(item.producto)}>
+                    <IconButton
+                      color="primary"
+                      onClick={() => addToCart(item.producto)}
+                    >
                       <AddIcon />
                     </IconButton>
-                    <IconButton color="primary" onClick={() => decreaseQuantity(item.producto.codigo)} disabled={item.cantidad === 1}>
+                    <IconButton
+                      color="primary"
+                      onClick={() => decreaseQuantity(item.producto.codigo)}
+                      disabled={item.cantidad === 1}
+                    >
                       <RemoveIcon />
                     </IconButton>
-                    <IconButton color="secondary" onClick={() => removeFromCart(item.producto.codigo)}>
+                    <IconButton
+                      color="secondary"
+                      onClick={() => removeFromCart(item.producto.codigo)}
+                    >
                       <DeleteIcon />
                     </IconButton>
                   </CardActions>
@@ -77,7 +96,7 @@ const Cart = () => {
             ))}
           </Grid>
           <Divider sx={{ my: 3 }} />
-          <Typography variant="h6" align="right" sx={{ fontWeight: 'bold' }}>
+          <Typography variant="h6" align="right" sx={{ fontWeight: "bold" }}>
             Total: Q{subtotal.toFixed(2)}
           </Typography>
           <Grid container spacing={2} justifyContent="center" sx={{ mt: 2 }}>
@@ -91,11 +110,7 @@ const Cart = () => {
               </Button>
             </Grid>
             <Grid item>
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={clearCart}
-              >
+              <Button variant="contained" color="secondary" onClick={clearCart}>
                 Cancelar Compra
               </Button>
             </Grid>
@@ -103,31 +118,7 @@ const Cart = () => {
         </>
       )}
 
-      <IconButton 
-        aria-controls="simple-menu" 
-        aria-haspopup="true" 
-        onClick={handleMenuOpen}
-        style={{ position: 'absolute', top: 16, right: 16 }}
-      >
-        <MoreVertIcon />
-      </IconButton>
-
-      <Menu
-        id="simple-menu"
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-      >
-        <MenuItem onClick={CerrarSesion}>Cerrar Sesión</MenuItem>
-      </Menu>
+      <Options></Options>
 
       <Box position="absolute" top={10} left={10}>
         <Button
@@ -136,8 +127,7 @@ const Cart = () => {
           color="secondary"
           onClick={handleGoBack}
           startIcon={<ArrowBackIcon />}
-        >
-        </Button>
+        ></Button>
       </Box>
     </Box>
   );

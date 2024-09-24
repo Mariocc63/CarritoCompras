@@ -1,10 +1,24 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
-import { Box, Typography, Button, Card, CardContent, IconButton, Menu, MenuItem, Divider, Container, Select, FormControl, InputLabel } from '@mui/material';
-import { AuthContext } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import React, { useContext, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import {
+  Box,
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  IconButton,
+  Menu,
+  MenuItem,
+  Divider,
+  Container,
+  Select,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
+import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 const ConfirmedOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -12,7 +26,7 @@ const ConfirmedOrders = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [categoryAnchorEl, setCategoryAnchorEl] = useState(null);
   const [productAnchorEl, setProductAnchorEl] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState("all");
   const navigate = useNavigate();
 
   const CerrarSesion = () => {
@@ -23,12 +37,15 @@ const ConfirmedOrders = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/verordenes', {
-          headers: { Authorization: `Bearer ${auth.token}` }
-        });
+        const response = await axios.get(
+          "http://localhost:5000/api/verordenes",
+          {
+            headers: { Authorization: `Bearer ${auth.token}` },
+          }
+        );
         setOrders(response.data.historial.ordenes);
       } catch (error) {
-        console.error('Error al obtener los datos de las ordenes:', error);
+        console.error("Error al obtener los datos de las ordenes:", error);
       }
     };
 
@@ -70,10 +87,10 @@ const ConfirmedOrders = () => {
   };
 
   const filterOrders = () => {
-    if (selectedStatus === 'all') {
+    if (selectedStatus === "all") {
       return orders;
     }
-    return orders.filter(order => order.estado === selectedStatus);
+    return orders.filter((order) => order.estado === selectedStatus);
   };
 
   const filteredOrders = filterOrders();
@@ -101,13 +118,18 @@ const ConfirmedOrders = () => {
         </FormControl>
 
         {filteredOrders.length > 0 ? (
-          filteredOrders.map(order => (
+          filteredOrders.map((order) => (
             <Card key={order.idorden} sx={{ marginBottom: 2, boxShadow: 3 }}>
               <CardContent>
                 <Typography variant="h6">Orden #{order.idorden}</Typography>
                 <Typography variant="body1">Nombre: {order.nombre}</Typography>
-                <Typography variant="body1">Fecha de Creación: {new Date(order.fecha_creacion).toLocaleDateString()}</Typography>
-                <Typography variant="body1">Total: Q{order.total_orden.toFixed(2)}</Typography>
+                <Typography variant="body1">
+                  Fecha de Creación:{" "}
+                  {new Date(order.fecha_creacion).toLocaleDateString()}
+                </Typography>
+                <Typography variant="body1">
+                  Total: Q{order.total_orden.toFixed(2)}
+                </Typography>
                 <Typography variant="body1">Estado: {order.estado}</Typography>
                 <Box mt={2}>
                   <Link to={`/order-details/${order.idorden}`}>
@@ -120,15 +142,17 @@ const ConfirmedOrders = () => {
             </Card>
           ))
         ) : (
-          <Typography variant="body1">No hay órdenes en este estado.</Typography>
+          <Typography variant="body1">
+            No hay órdenes en este estado.
+          </Typography>
         )}
       </Box>
 
-      <IconButton 
-        aria-controls="simple-menu" 
-        aria-haspopup="true" 
+      <IconButton
+        aria-controls="simple-menu"
+        aria-haspopup="true"
         onClick={handleMenuOpen}
-        sx={{ position: 'fixed', top: 20, right: 20 }}
+        sx={{ position: "fixed", top: 20, right: 20 }}
       >
         <MoreVertIcon />
       </IconButton>
@@ -139,26 +163,20 @@ const ConfirmedOrders = () => {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
         anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
+          vertical: "top",
+          horizontal: "right",
         }}
         transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
+          vertical: "top",
+          horizontal: "right",
         }}
         keepMounted
       >
-        <MenuItem
-          onClick={handleCategoryMenuOpen}
-          aria-haspopup="true"
-        >
+        <MenuItem onClick={handleCategoryMenuOpen} aria-haspopup="true">
           Categoría de Productos
         </MenuItem>
 
-        <MenuItem
-          onClick={handleProductMenuOpen}
-          aria-haspopup="true"
-        >
+        <MenuItem onClick={handleProductMenuOpen} aria-haspopup="true">
           Productos
         </MenuItem>
         <MenuItem onClick={CerrarSesion}>Cerrar Sesión</MenuItem>
@@ -170,17 +188,21 @@ const ConfirmedOrders = () => {
         open={Boolean(categoryAnchorEl)}
         onClose={handleCategoryMenuClose}
         anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
+          vertical: "bottom",
+          horizontal: "right",
         }}
         transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
+          vertical: "top",
+          horizontal: "right",
         }}
       >
-        <MenuItem onClick={() => handleNavigate('/viewcategories')}>Ver Categorías</MenuItem>
+        <MenuItem onClick={() => handleNavigate("/viewcategories")}>
+          Ver Categorías
+        </MenuItem>
         <Divider />
-        <MenuItem onClick={() => handleNavigate('/addcategory')}>Agregar Categorías</MenuItem>
+        <MenuItem onClick={() => handleNavigate("/addcategory")}>
+          Agregar Categorías
+        </MenuItem>
       </Menu>
       <Menu
         id="product-menu"
@@ -188,17 +210,21 @@ const ConfirmedOrders = () => {
         open={Boolean(productAnchorEl)}
         onClose={handleProductMenuClose}
         anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
+          vertical: "bottom",
+          horizontal: "right",
         }}
         transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
+          vertical: "top",
+          horizontal: "right",
         }}
       >
-        <MenuItem onClick={() => handleNavigate('/viewproducts')}>Ver Productos</MenuItem>
+        <MenuItem onClick={() => handleNavigate("/viewproducts")}>
+          Ver Productos
+        </MenuItem>
         <Divider />
-        <MenuItem onClick={() => handleNavigate('/addproduct')}>Agregar Productos</MenuItem>
+        <MenuItem onClick={() => handleNavigate("/addproduct")}>
+          Agregar Productos
+        </MenuItem>
       </Menu>
     </Container>
   );

@@ -1,36 +1,45 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup'; 
-import * as yup from 'yup'; 
-import { TextField, Button, Box, Typography, Paper, Container } from '@mui/material';
-import { AuthContext } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import React, { useContext, useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import {
+  TextField,
+  Button,
+  Box,
+  Typography,
+  Paper,
+  Container,
+} from "@mui/material";
+import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const loginSchema = yup.object().shape({
   email: yup
     .string()
-    .email('Formato de correo inválido')
-    .required('El correo es requerido'),
-  password: yup
-    .string()
-    .required('La contraseña es requerida')
+    .email("Formato de correo inválido")
+    .required("El correo es requerido"),
+  password: yup.string().required("La contraseña es requerida"),
 });
 
 const LoginForm = () => {
-  const {auth, loginUser} = useContext(AuthContext);
+  const { auth, loginUser } = useContext(AuthContext);
   const [loginError, setLoginError] = useState("");
   const navigate = useNavigate();
 
-  const { register, handleSubmit, formState: { errors } } = useForm({
-    resolver: yupResolver(loginSchema), 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(loginSchema),
   });
 
   useEffect(() => {
     if (auth && auth.user && auth.user.data && auth.user.data.length > 0) {
       if (auth.user.data[0].rol_idrol === 2) {
-        navigate('/products');
+        navigate("/products");
       } else if (auth.user.data[0].rol_idrol === 1) {
-        navigate('/confirmed-orders');
+        navigate("/confirmed-orders");
       }
     }
   }, [auth, navigate]);
@@ -45,42 +54,37 @@ const LoginForm = () => {
   };
 
   return (
-    <Box 
+    <Box
       sx={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '20px'
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "20px",
       }}
     >
       <Container maxWidth="xs">
-        
-        {/* Título centrado arriba, fuera del Paper */}
         <Box textAlign="center" mb={3}>
-          <Typography variant="h4">
-            Iniciar Sesión
-          </Typography>
+          <Typography variant="h4">Iniciar Sesión</Typography>
         </Box>
 
-        {/* Paper para el formulario */}
-        <Paper elevation={6} sx={{ padding: '30px', borderRadius: '15px'}}>
-          <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
+        <Paper elevation={6} sx={{ padding: "30px", borderRadius: "15px" }}>
+          <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
             <TextField
               fullWidth
               label="Correo electrónico"
-              {...register('email')}
+              {...register("email")}
               error={!!errors.email}
               helperText={errors.email ? errors.email.message : ""}
               margin="normal"
               variant="outlined"
             />
-            
+
             <TextField
               fullWidth
               label="Contraseña"
               type="password"
-              {...register('password')}
+              {...register("password")}
               error={!!errors.password}
               helperText={errors.password ? errors.password.message : ""}
               margin="normal"
@@ -94,7 +98,12 @@ const LoginForm = () => {
             )}
 
             <Box textAlign="center" mt={2}>
-              <Button type="submit" variant="contained" color="primary" fullWidth>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+              >
                 Iniciar Sesión
               </Button>
             </Box>
@@ -103,13 +112,13 @@ const LoginForm = () => {
               <Button
                 variant="text"
                 color="secondary"
-                onClick={() => navigate('/register')}
+                onClick={() => navigate("/register")}
                 fullWidth
               >
                 ¿No tienes cuenta? Registrate
               </Button>
             </Box>
-          </Box>
+          </form>
         </Paper>
       </Container>
     </Box>
