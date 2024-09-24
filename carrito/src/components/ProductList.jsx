@@ -53,7 +53,7 @@ const ProductList = ({ token }) => {
     return <Typography variant="h5">No hay productos disponibles.</Typography>;
   }
 
-  const CerrarSesion = () => {
+  const logOut = () => {
     logoutUser();
     navigate("/login");
     clearCart();
@@ -112,7 +112,7 @@ const ProductList = ({ token }) => {
             <MenuItem onClick={() => handleNavigate("/historial")}>
               Historial de Órdenes
             </MenuItem>
-            <MenuItem onClick={CerrarSesion}>Cerrar Sesión</MenuItem>
+            <MenuItem onClick={logOut}>Cerrar Sesión</MenuItem>
           </Menu>
         </Toolbar>
       </AppBar>

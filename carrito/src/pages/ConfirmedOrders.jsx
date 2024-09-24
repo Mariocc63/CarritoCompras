@@ -29,7 +29,7 @@ const ConfirmedOrders = () => {
   const [selectedStatus, setSelectedStatus] = useState("all");
   const navigate = useNavigate();
 
-  const CerrarSesion = () => {
+  const logOut = () => {
     logoutUser();
     navigate("/login");
   };
@@ -179,7 +179,7 @@ const ConfirmedOrders = () => {
         <MenuItem onClick={handleProductMenuOpen} aria-haspopup="true">
           Productos
         </MenuItem>
-        <MenuItem onClick={CerrarSesion}>Cerrar Sesión</MenuItem>
+        <MenuItem onClick={logOut}>Cerrar Sesión</MenuItem>
       </Menu>
 
       <Menu

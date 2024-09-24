@@ -11,7 +11,7 @@ const Options = () => {
   const navigate = useNavigate();
   const { clearCart } = useContext(CartContext);
 
-  const CerrarSesion = () => {
+  const logOut = () => {
     logoutUser();
     navigate("/login");
     clearCart();
@@ -50,7 +50,7 @@ const Options = () => {
           horizontal: "right",
         }}
       >
-        <MenuItem onClick={CerrarSesion}>Cerrar Sesión</MenuItem>
+        <MenuItem onClick={logOut}>Cerrar Sesión</MenuItem>
       </Menu>
     </>
   );
