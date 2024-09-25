@@ -2,9 +2,7 @@ const express = require("express");
 const router = express.Router();
 const UsuarioController = require("../controllers/UsuarioController.js");
 const {
-  autenticarToken,
-  verificarRol,
-  dicciorioRoles,
+  autenticarToken
 } = require("../middleware.js");
 
 router.post("/usuario", UsuarioController.crearUsuario);

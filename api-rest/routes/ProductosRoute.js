@@ -23,52 +23,52 @@ router.post(
   "/productos",
   subida.single("foto"),
   autenticarToken,
-  verificarRol(dicciorioRoles["Operador administrativo"]),
+  verificarRol(dicciorioRoles.Operador_administrativo),
   ProductosController.crearProductos
 );
 router.put(
   "/productos/:idproductos",
   subida.single("foto"),
   autenticarToken,
-  verificarRol(dicciorioRoles["Operador administrativo"]),
+  verificarRol(dicciorioRoles.Operador_administrativo),
   ProductosController.actualizarProductos
 );
 router.get(
   "/verproductos/",
   autenticarToken,
-  verificarRol(dicciorioRoles["Cliente"]),
+  verificarRol(dicciorioRoles.Cliente),
   ProductosController.verProductosActivos
 );
 router.get(
   "/verproductoscompletos/",
   autenticarToken,
-  verificarRol(dicciorioRoles["Operador administrativo"]),
+  verificarRol(dicciorioRoles.Operador_administrativo),
   ProductosController.verProductosCompletos
 );
 router.get(
   "/verproductoindividual/:idproductos",
   autenticarToken,
-  verificarRol(dicciorioRoles["Operador administrativo"]),
+  verificarRol(dicciorioRoles.Operador_administrativo),
   ProductosController.verProductoIndividual
 );
 
 router.get(
   "/verproductoscategoria/:categoriaproductos_idcategoriaproductos",
   autenticarToken,
-  verificarRol(dicciorioRoles["Operador administrativo"]),
+  verificarRol(dicciorioRoles.Operador_administrativo),
   ProductosController.VerProductosPorCategoria
 );
 
 router.put(
   "/activarproductos/:idcategoria",
   autenticarToken,
-  verificarRol(dicciorioRoles["Operador administrativo"]),
+  verificarRol(dicciorioRoles.Operador_administrativo),
   ProductosController.ActivarProductos
 );
 router.put(
   "/desactivarproductos/:idcategoria",
   autenticarToken,
-  verificarRol(dicciorioRoles["Operador administrativo"]),
+  verificarRol(dicciorioRoles.Operador_administrativo),
   ProductosController.DesactivarProductos
 );
 

@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const SECRET_KEY = "12345";
-const dicciorioRoles = { "Operador administrativo": 1, Cliente: 2 };
+const dicciorioRoles = { Operador_administrativo: 1, Cliente: 2 };
 
 function generarToken(datos) {
   try {

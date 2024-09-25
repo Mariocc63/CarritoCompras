@@ -10,13 +10,13 @@ const {
 router.post(
   "/estados",
   autenticarToken,
-  verificarRol(dicciorioRoles["Operador administrativo"]),
+  verificarRol(dicciorioRoles.Operador_administrativo),
   EstadoController.crearEstado
 );
 router.put(
   "/estados/:idestados",
   autenticarToken,
-  verificarRol(dicciorioRoles["Operador administrativo"]),
+  verificarRol(dicciorioRoles.Operador_administrativo),
   EstadoController.actualizarEstado
 );
 

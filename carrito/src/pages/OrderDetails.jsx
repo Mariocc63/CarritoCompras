@@ -12,6 +12,7 @@ import {
   TextField,
   List,
   ListItem,
+  Alert
 } from "@mui/material";
 import { AuthContext } from "../context/AuthContext";
 import moment from "moment";
@@ -30,6 +31,7 @@ const OrderDetails = () => {
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [openRejectDialog, setOpenRejectDialog] = useState(false);
   const [rejectComment, setRejectComment] = useState("");
+  const [error, setError] = useState(null);
   const { auth } = useContext(AuthContext);
 
   useEffect(() => {
@@ -68,8 +70,7 @@ const OrderDetails = () => {
       alert("Orden entregada correctamente");
       navigate("/confirmed-orders");
     } catch (error) {
-      alert("Error al entregar la orden");
-      console.error("Error al confirmar la orden:", error);
+      setError("Error al actualiza la categoria");
     }
   };
 
@@ -169,6 +170,11 @@ const OrderDetails = () => {
             ) : (
               ""
             )}
+            {error && (
+            <Alert severity="error" onClose={() => setError("")}>
+              {error}
+            </Alert>
+          )}
           </Box>
 
           <Dialog
